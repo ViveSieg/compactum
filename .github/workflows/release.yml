@@ -24,8 +24,8 @@ jobs:
             artifact_name: Compactum-macOS.dmg
             artifact_path: dist/Compactum-macOS.dmg
           - os: windows-latest
-            artifact_name: Compactum-Windows.zip
-            artifact_path: dist/Compactum-Windows.zip
+            artifact_name: Compactum-Windows.exe
+            artifact_path: dist/Compactum-Windows.exe
           - os: ubuntu-latest
             artifact_name: Compactum-Linux.tar.gz
             artifact_path: dist/Compactum-Linux.tar.gz
@@ -80,12 +80,12 @@ jobs:
             "Compactum-macOS.dmg" \
             "Compactum.app"
 
-      # ----- Windows: zip the executable folder -----
+      # ----- Windows: ship the .exe directly (PyInstaller onefile = self-contained) -----
       - name: Package Windows
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          Compress-Archive -Path "dist/Compactum.exe" -DestinationPath "dist/Compactum-Windows.zip"
+          Move-Item "dist/Compactum.exe" "dist/Compactum-Windows.exe"
 
       # ----- Linux: tar the binary -----
       - name: Package Linux
