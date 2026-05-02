@@ -4,7 +4,7 @@
 
 # Compactum
 
-**Force any PDF or image under a target size — the hard, honest way.**
+Force any PDF or image under a target size.
 
 [![Release](https://img.shields.io/github/v/release/ViveSieg/compactum?display_name=tag&style=flat-square)](https://github.com/ViveSieg/compactum/releases)
 [![License: PolyForm NC](https://img.shields.io/badge/license-PolyForm%20Noncommercial-000091.svg?style=flat-square)](LICENSE)
@@ -12,123 +12,118 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-3776ab.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![Issues](https://img.shields.io/github/issues/ViveSieg/compactum?style=flat-square)](https://github.com/ViveSieg/compactum/issues)
 
-**[English](#-english)** · **[中文](#-中文)**
+[English](#english) · [中文](#中文)
 
 </div>
 
 ---
 
-# 🇺🇸 English
+## English
 
-> Drop a PDF or image, pick a target size, hit Start. The output is guaranteed below the cap when physically possible — and when it isn't, you get an honest warning instead of a silent fail.
+A cross-platform desktop app that compresses PDFs and images to a size limit you choose. The output is bounded above by your target when the input is feasible at that size; when it isn't, the app produces the smallest possible result and shows a warning.
 
-Designed for visa applications, school portals, government forms, and any system with a hard "≤ 500 KB / 1 MB / 2 MB" upload limit.
+Typical use cases: visa applications, school portals, government forms, and other systems that enforce upload limits like "≤ 500 KB", "≤ 1 MB", or "≤ 2 MB".
 
-**Supported inputs:** `PDF` · `JPG` · `PNG` · `WebP` · `BMP` · `TIFF` · `GIF`
+**Supported inputs:** PDF, JPG, JPEG, PNG, WebP, BMP, TIFF, GIF.
 
-## ⬇️ Download
+### ⬇️ Download
 
-> No Python install required. Just download, unzip, double-click.
+Pre-built binaries are published on the [Releases page](https://github.com/ViveSieg/compactum/releases/latest). Python is not required.
 
 | Platform | Download | How to run |
 |---|---|---|
-| **Windows** 10 / 11 | [⬇ Compactum-Windows.zip](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Windows.zip) | Unzip → double-click `Compactum.exe` |
-| **macOS** 10.13+ | [⬇ Compactum-macOS.dmg](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.dmg) | Open the `.dmg` → drag `Compactum.app` into Applications |
-| **Linux** | [⬇ Compactum-Linux.tar.gz](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Linux.tar.gz) | Untar → `./Compactum` |
+| Windows 10 / 11 | [Compactum-Windows.exe](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Windows.exe) | Double-click `Compactum-Windows.exe`. The first launch may show a SmartScreen warning — click **More info → Run anyway**. |
+| macOS 10.13+ | [Compactum-macOS.dmg](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.dmg) | Open the `.dmg`, drag `Compactum.app` into Applications, then open it from Applications. |
+| Linux | [Compactum-Linux.tar.gz](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Linux.tar.gz) | Extract the archive and run `./Compactum`. |
 
-> ⚠️ **macOS Gatekeeper** may say "cannot verify developer" on first launch — **right-click `Compactum.app` → Open → Open anyway**. If the app silently fails to launch (no window appears, no error), open Terminal and run:
+> **macOS note.** The build is not signed with an Apple Developer ID. On the first launch, Gatekeeper may say "cannot verify developer". Right-click `Compactum.app` → **Open** → **Open** in the dialog. If the app does not open at all (no window, no error), open Terminal and run:
 > ```bash
 > xattr -dr com.apple.quarantine /Applications/Compactum.app
 > ```
-> Then double-click again.
+> Then open it again.
 
-📦 All releases: [github.com/ViveSieg/compactum/releases](https://github.com/ViveSieg/compactum/releases)
+All releases: <https://github.com/ViveSieg/compactum/releases>
 
-## 🚀 Quick start
+### Quick start
 
-```
-1. Open Compactum
-2. Pick the output type
-3. Drop a PDF or image (single or batch)
-4. Pick a target size — 200 KB / 500 KB / 1 MB / …
-5. Click Start
-```
+1. Open Compactum.
+2. Choose an output type.
+3. Drop one or more files into the window (PDF or image).
+4. Choose a target size: 200 KB, 500 KB, 1 MB, 2 MB, 5 MB, or a custom KB value.
+5. Click **Start**.
 
-The output appears **right next to your original file** with a clear suffix in the name.
+The output is written to the same directory as the input, with a suffix added to the file name.
 
-## 🔄 Modes — three of them
+### Modes
 
-### ① PDF → Images
+#### ① PDF → Images
 
-> **Each page becomes a separate JPG. Each JPG is compressed independently to ≤ target size.**
+Each page is rasterized to a separate JPG. Each output JPG is compressed independently to the target size.
 
 | | |
 |---|---|
-| **Input** | A PDF (any number of pages) |
-| **Output** | A folder `<name>_jpg_500kb/` containing `<name>_page-0001.jpg`, `<name>_page-0002.jpg`, ... |
-| **Per-file size** | ✅ Each JPG ≤ target |
-| **Page count effect** | ❌ None — every page is compressed independently of every other page |
-| **Best for** | Online forms requiring "each scanned page ≤ 500 KB" — visa portals, school applications, scholarship submissions |
+| Input | A single PDF (any number of pages). |
+| Output | A folder named `<basename>_jpg_500kb/` containing `<basename>_page-0001.jpg`, `<basename>_page-0002.jpg`, … |
+| Per-file size | Each JPG is bounded by the target. |
+| Page count effect | None. Each page is processed independently of the others. |
+| Use case | Forms that require each scanned page to be ≤ 500 KB individually. |
 
-### ② PDF → Smaller PDF
+#### ② PDF → Smaller PDF
 
-> **All pages re-rendered into a single image-based PDF. The whole PDF ≤ target size.**
-
-| | |
-|---|---|
-| **Input** | A PDF |
-| **Output** | A single file `<name>_compressed_500kb.pdf` |
-| **Total size** | ✅ Whole file ≤ target |
-| **Page count effect** | ⚠️ More pages = less budget per page = lower resolution. The *total* always stays bounded. |
-| **Trade-off** | ⚠️ Output is image-based — searchable text, hyperlinks, bookmarks, form fields are **lost**. |
-| **Best for** | "Single PDF must be ≤ 500 KB" portals where layout matters more than searchable text |
-
-### ③ Image → Smaller JPG
-
-> **One image in, one JPG out, ≤ target size. Format-agnostic input.**
+All pages are rasterized and rebuilt into one image-based PDF. The whole PDF is bounded by the target size.
 
 | | |
 |---|---|
-| **Input** | A single image — JPG / PNG / WebP / BMP / TIFF / GIF (HEIC if supported by your Pillow build) |
-| **Output** | `<name>_500kb.jpg` |
-| **Output size** | ✅ ≤ target |
-| **EXIF orientation** | ✅ Preserved — rotated phone photos open correctly |
-| **Best for** | Profile photos, ID scans, exam photos, any "image upload ≤ X KB" form |
+| Input | A single PDF. |
+| Output | A single file `<basename>_compressed_500kb.pdf`. |
+| Total size | The whole PDF is bounded by the target. |
+| Page count effect | More pages share the same byte budget, which lowers the per-page resolution. The total stays bounded. |
+| Trade-off | The output is image-based. Searchable text, hyperlinks, bookmarks, and form fields are not preserved. |
+| Use case | Systems that accept a single PDF up to a fixed size, where layout fidelity matters more than searchable text. |
 
-## ✨ Features
+#### ③ Image → Smaller JPG
+
+A single image is compressed to a JPG bounded by the target size. The input format can be JPG, PNG, WebP, BMP, TIFF, or GIF; the output is always JPG.
 
 | | |
 |---|---|
-| 🎯 **Best-effort hard cap** | Output is always ≤ target when physically feasible. When the target is so small the content can't be represented at all, the app produces the smallest-possible result and shows a clear warning — never crashes, never silently lies. |
-| 🌐 **Cross-platform** | Native Windows `.exe`, macOS `.app`, Linux binary. No Python required for end users. |
-| 🔒 **100% offline** | Files never leave your machine. No telemetry, no analytics, no upload. |
-| 🌍 **Bilingual UI** | English / 中文 — auto-detected from system language, manual toggle in the header. |
-| 🪶 **Drag & drop** | No command line needed. Single or multiple files. |
-| 📚 **Batch processing** | Drop multiple files at once — they're processed sequentially with a unified progress bar showing `[file 2/5] · current page 3/12`. |
-| ⚙️ **Skip-limit option** | Toggle off the size cap to convert at native quality (handy for batch format conversion). |
-| 📐 **Render-scale control** | Tune the starting bitmap resolution for PDF inputs (default 2.0×). |
-| 📊 **Honest reporting** | Mode ② shows the actual effective render scale and JPEG quality after auto-shrink, so you can tell when your settings were too aggressive. |
+| Input | A single image. |
+| Output | `<basename>_500kb.jpg`. |
+| Output size | Bounded by the target. |
+| EXIF orientation | Preserved during the rotate-to-display step. |
+| Use case | Profile photos, ID scans, and other image-upload forms. |
 
-## ⌨️ CLI
+### Features
+
+- Cross-platform: native binaries for Windows, macOS, and Linux. End users do not need to install Python.
+- Offline. No network access, no telemetry. Files do not leave the machine.
+- Bilingual interface (English / 中文), auto-selected from the system language and switchable in the header.
+- Drag and drop, single or batch.
+- Batch processing. Multiple files are processed in order; the progress bar shows `[file 2/5] · current page 3/12`.
+- Skip-limit option. Disable the size cap to convert at native quality without compression (useful for format conversion only).
+- Render-scale control. Adjusts the starting bitmap resolution for PDF inputs (default 2.0×). Image mode does not use this setting.
+- Reporting. After Mode ② finishes, the app reports the effective render scale and the JPEG quality actually used, so a user-supplied scale that had to be reduced is visible rather than hidden.
+
+### CLI
 
 After `pip install -e .`:
 
 ```bash
 compactum                                 # launch the GUI
-compactum-jpg input.pdf  --max-kb 500     # PDF → folder of JPGs (mode ①)
-compactum-pdf input.pdf  --max-kb 500     # PDF → single smaller PDF (mode ②)
-compactum-img photo.png  --max-kb 500     # image → JPG (mode ③)
+compactum-jpg input.pdf  --max-kb 500     # mode ①: PDF → folder of JPGs
+compactum-pdf input.pdf  --max-kb 500     # mode ②: PDF → single smaller PDF
+compactum-img photo.png  --max-kb 500     # mode ③: image → JPG
 ```
 
-**Arguments:**
+Arguments:
 
 ```
---max-kb N      Target size in KB (default 500). Output is hard-capped at N×1024 bytes when feasible.
---scale F       Initial render scale for PDFs, 1.0–3.0 (default 2.0). Image mode ignores this.
---version       Show version.
+--max-kb N      Target size in KB (default: 500). Output is bounded by N × 1024 bytes when feasible.
+--scale F       Initial render scale for PDF inputs, range 1.0–3.0 (default: 2.0). Ignored by image mode.
+--version       Print the version and exit.
 ```
 
-## 🛠 Build from source
+### Build from source
 
 ```bash
 git clone https://github.com/ViveSieg/compactum.git
@@ -138,141 +133,136 @@ cd compactum
 pip install -r requirements.txt
 python -m compactum
 
-# Build a standalone binary for your platform
+# Build a standalone binary for the current platform
 pip install pyinstaller
 pyinstaller build/compactum.spec --noconfirm --clean
 # Output appears in dist/
 ```
 
-GitHub Actions automatically builds binaries for **macOS / Windows / Linux** on every `v*` tag and attaches them to a Release. See [`.github/workflows/release.yml`](.github/workflows/release.yml).
+GitHub Actions builds binaries for macOS, Windows, and Linux on every `v*` tag and attaches them to a GitHub Release. See [`.github/workflows/release.yml`](.github/workflows/release.yml).
 
-## ❓ FAQ
+### FAQ
 
-**Q: My output is over the target — bug?**
-A: When the target is so small that even minimum-resolution + lowest-quality encoding still exceeds it, the algorithm produces the smallest-possible output and clearly warns you. **Increase the target size.**
+**The output is larger than the target. Is this a bug?**
+No. When the target is small enough that even minimum dimensions and minimum quality cannot fit it, the algorithm produces the smallest result it can and reports the situation. Increase the target.
 
-**Q: Does it work offline?**
-A: Yes, fully. No network calls. Files never leave your computer.
+**Does it work offline?**
+Yes. No network calls are made.
 
-**Q: Will Mode ② keep my searchable text / hyperlinks / form fields?**
-A: No. Mode ② rebuilds the PDF as an image-based PDF. If you need to keep searchable text, use Mode ①. If your goal is "small PDF that still has search", Compactum isn't the right tool.
+**Does Mode ② preserve searchable text, hyperlinks, or form fields?**
+No. Mode ② rebuilds the PDF as image data. Use Mode ① if you need per-page output that retains image fidelity but has no searchable text either; Compactum does not produce small PDFs with searchable text.
 
-**Q: Can I use it commercially?**
-A: No. Compactum is licensed under PolyForm Noncommercial 1.0.0. For commercial use, contact the author via GitHub.
+**Can I use Compactum commercially?**
+No. The license is PolyForm Noncommercial 1.0.0. Contact the author via GitHub for commercial licensing.
 
 ---
 
-# 🇨🇳 中文
+## 中文
 
-> 拖入 PDF 或图片，选目标大小，点开始。物理可行时输出**严格不超**目标大小；连最小尺寸都塞不下时给出明确告警，**绝不报错、绝不静默撒谎**。
+一个跨平台桌面程序，把 PDF 或图片压缩到你指定的大小上限。物理可行时输出不会超过目标；连最小尺寸都塞不下时，输出最小可行结果并显示警告。
 
-适合签证、学校官网、政府办事系统等"文件必须 ≤ 500KB / 1MB / 2MB"的硬限制场景。
+典型场景：签证、学校官网、政府办事系统等强制"≤ 500 KB"、"≤ 1 MB"、"≤ 2 MB"上传上限的网页表单。
 
-**支持格式：** `PDF` · `JPG` · `PNG` · `WebP` · `BMP` · `TIFF` · `GIF`
+**支持输入格式：** PDF、JPG、JPEG、PNG、WebP、BMP、TIFF、GIF。
 
-## ⬇️ 下载
+### ⬇️ 下载
 
-> **不需要装 Python**，下载即用。
+预编译二进制发布在 [Releases 页面](https://github.com/ViveSieg/compactum/releases/latest)。**不需要安装 Python**。
 
-| 系统 | 下载 | 使用 |
+| 平台 | 下载 | 使用 |
 |---|---|---|
-| **Windows** 10 / 11 | [⬇ Compactum-Windows.zip](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Windows.zip) | 解压 → 双击 `Compactum.exe` |
-| **macOS** 10.13+ | [⬇ Compactum-macOS.dmg](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.dmg) | 打开 `.dmg` → 把 `Compactum.app` 拖进"应用程序" |
-| **Linux** | [⬇ Compactum-Linux.tar.gz](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Linux.tar.gz) | 解压 → 运行 `./Compactum` |
+| Windows 10 / 11 | [Compactum-Windows.exe](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Windows.exe) | 双击 `Compactum-Windows.exe`。首次运行可能弹 SmartScreen 提示，点击"更多信息 → 仍要运行"。 |
+| macOS 10.13+ | [Compactum-macOS.dmg](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.dmg) | 打开 `.dmg`，把 `Compactum.app` 拖进"应用程序"文件夹，再从"应用程序"里打开。 |
+| Linux | [Compactum-Linux.tar.gz](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Linux.tar.gz) | 解压后运行 `./Compactum`。 |
 
-> ⚠️ **macOS Gatekeeper**：第一次打开可能提示"无法验证开发者" —— **右键 `Compactum.app` → 打开 → 仍要打开**。如果双击没反应、没窗口、没报错，打开 Terminal 跑一次：
+> **macOS 说明。** 当前版本没有 Apple Developer ID 签名，首次打开可能提示"无法验证开发者"。右键 `Compactum.app` → 打开 → 在对话框中再次点"打开"。如果双击完全没反应（没窗口、没报错），打开 Terminal 跑一次：
 > ```bash
 > xattr -dr com.apple.quarantine /Applications/Compactum.app
 > ```
-> 然后再双击就行。
+> 然后再次打开。
 
-📦 所有版本：[github.com/ViveSieg/compactum/releases](https://github.com/ViveSieg/compactum/releases)
+所有版本：<https://github.com/ViveSieg/compactum/releases>
 
-## 🚀 快速开始
+### 快速开始
 
-```
-1. 打开 Compactum
-2. 选择输出类型
-3. 拖入 PDF 或图片（支持批量）
-4. 选目标大小 —— 200 KB / 500 KB / 1 MB / …
-5. 点 开始
-```
+1. 打开 Compactum。
+2. 选择输出类型。
+3. 把一个或多个文件拖进窗口（PDF 或图片）。
+4. 选目标大小：200 KB、500 KB、1 MB、2 MB、5 MB，或自定义 KB 数值。
+5. 点击"开始"。
 
-输出**直接放在原文件旁边**，文件名带清晰的后缀。
+输出文件保存在与输入文件相同的目录下，文件名后会附加后缀。
 
-## 🔄 三种模式
+### 三种模式
 
-### ① PDF → 图片
+#### ① PDF → 图片
 
-> **每页变成一张独立的 JPG，每张单独压缩到 ≤ 目标大小。**
+每页单独栅格化成一张 JPG，**每张 JPG 单独**压缩到目标大小。
 
 | | |
 |---|---|
-| **输入** | 一份 PDF（任意页数） |
-| **输出** | 文件夹 `<文件名>_jpg_500kb/`，里面是 `<文件名>_page-0001.jpg`、`<文件名>_page-0002.jpg`、... |
-| **单文件大小** | ✅ 每张 JPG 都 ≤ 目标 |
-| **页数影响** | ❌ **无影响** —— 每页单独处理，互不影响 |
-| **典型场景** | 网申要求"每页扫描件 ≤ 500KB" —— 签证、学校申请、奖学金材料 |
+| 输入 | 一份 PDF（任意页数）。 |
+| 输出 | 文件夹 `<原文件名>_jpg_500kb/`，里面是 `<原文件名>_page-0001.jpg`、`<原文件名>_page-0002.jpg`、…… |
+| 单文件大小 | 每张 JPG 都 ≤ 目标。 |
+| 页数影响 | 无。每页独立处理，互不影响。 |
+| 适用场景 | 网页表单要求"每张扫描页 ≤ 500 KB"的场景。 |
 
-### ② PDF → 压缩 PDF
+#### ② PDF → 压缩 PDF
 
-> **所有页面重新渲染拼成一份图片版 PDF，整份文件 ≤ 目标大小。**
-
-| | |
-|---|---|
-| **输入** | 一份 PDF |
-| **输出** | 单文件 `<文件名>_compressed_500kb.pdf` |
-| **总大小** | ✅ 整份 ≤ 目标 |
-| **页数影响** | ⚠️ 页数越多 → 每页能分到的字节越少 → 分辨率被压低（**总和**始终不超目标） |
-| **代价** | ⚠️ 输出是图片版 PDF —— 可搜索文字、超链接、书签、表单字段会**全部丢失** |
-| **典型场景** | 系统只接受"一份 PDF ≤ 500KB"，且更看重排版而非文字可搜索 |
-
-### ③ 图片 → 压缩 JPG
-
-> **单张图进、单张 JPG 出，≤ 目标大小。输入格式不限。**
+所有页面栅格化后拼成一份图片版 PDF，**整份 PDF** 受目标大小约束。
 
 | | |
 |---|---|
-| **输入** | 单张图片 —— JPG / PNG / WebP / BMP / TIFF / GIF（如果你的 Pillow 支持，HEIC 也行） |
-| **输出** | `<文件名>_500kb.jpg` |
-| **输出大小** | ✅ ≤ 目标 |
-| **EXIF 方向** | ✅ 保留 —— 手机竖拍照片不会歪 |
-| **典型场景** | 证件照、考试照、各种"图片 ≤ X KB"上传场景 |
+| 输入 | 一份 PDF。 |
+| 输出 | 单文件 `<原文件名>_compressed_500kb.pdf`。 |
+| 总大小 | 整份 PDF ≤ 目标。 |
+| 页数影响 | 页数越多，每页能分到的字节越少，分辨率会被压低；总和始终不超目标。 |
+| 代价 | 输出是图片版 PDF。可搜索文字、超链接、书签、表单字段会丢失。 |
+| 适用场景 | 系统接受"一份 PDF ≤ 固定大小"，且更看重排版而不是文字可搜索。 |
 
-## ✨ 功能亮点
+#### ③ 图片 → 压缩 JPG
+
+单张图片压缩到目标大小，输出统一是 JPG。输入格式可以是 JPG、PNG、WebP、BMP、TIFF、GIF。
 
 | | |
 |---|---|
-| 🎯 **尽力硬命中目标** | 物理可行时**严格不超**目标大小；连最小尺寸都塞不下时输出最小可行结果并明确告警，绝不崩溃、绝不撒谎。 |
-| 🌐 **跨平台** | Windows `.exe` / macOS `.app` / Linux 原生二进制。用户**不需要装 Python**。 |
-| 🔒 **完全离线** | 文件永远不离开你的电脑。零联网、零追踪、零上传。 |
-| 🌍 **中英双语** | 自动跟随系统语言，可在右上角手动切换。 |
-| 🪶 **拖拽即用** | 不需要命令行。支持单文件和批量。 |
-| 📚 **批量处理** | 一次拖多个文件，按顺序处理，进度条显示 `[第 2/5 个] · 当前 3/12 页`。 |
-| ⚙️ **可关闭压缩** | 关掉大小限制按原画质输出 —— 仅做格式转换时用。 |
-| 📐 **渲染倍率可调** | PDF 输入的起点分辨率可调（默认 2.0×）。 |
-| 📊 **诚实报告** | 模式 ② 显示**实际生效的渲染倍率**和最终 JPEG 质量 —— 你设的参数被自动调整时会明确告诉你。 |
+| 输入 | 单张图片。 |
+| 输出 | `<原文件名>_500kb.jpg`。 |
+| 输出大小 | ≤ 目标。 |
+| EXIF 方向 | 处理前会按 EXIF 方向旋转，不会出现照片倒着。 |
+| 适用场景 | 证件照、考试照、各种图片上传表单。 |
 
-## ⌨️ 命令行
+### 功能
+
+- 跨平台：Windows、macOS、Linux 三套原生二进制。终端用户不需要装 Python。
+- 离线运行。零联网、零追踪，文件不离开本机。
+- 中英双语界面，自动跟随系统语言，可在标题栏手动切换。
+- 拖放即用，支持单文件和批量。
+- 批量处理：多个文件按顺序处理，进度条显示 `[第 2/5 个] · 当前 3/12 页`。
+- 关闭压缩选项：关掉大小约束按原画质输出，仅做格式转换时使用。
+- 渲染倍率可调：调节 PDF 输入的起点位图分辨率（默认 2.0×），图片模式不使用该参数。
+- 报告：模式 ② 结束后会显示实际生效的渲染倍率和最终的 JPEG 质量；用户设置过高被自动调低时不会被隐藏。
+
+### 命令行
 
 `pip install -e .` 之后：
 
 ```bash
 compactum                                 # 打开 GUI
-compactum-jpg input.pdf  --max-kb 500     # PDF → 多张 JPG（模式 ①）
-compactum-pdf input.pdf  --max-kb 500     # PDF → 压缩 PDF（模式 ②）
-compactum-img photo.png  --max-kb 500     # 图片 → 压缩 JPG（模式 ③）
+compactum-jpg input.pdf  --max-kb 500     # 模式 ①：PDF → 多张 JPG
+compactum-pdf input.pdf  --max-kb 500     # 模式 ②：PDF → 单份压缩 PDF
+compactum-img photo.png  --max-kb 500     # 模式 ③：图片 → JPG
 ```
 
-**参数：**
+参数：
 
 ```
---max-kb N      目标大小（KB），默认 500。物理可行时硬命中 N×1024 字节。
---scale F       PDF 起点渲染倍率，1.0–3.0，默认 2.0。图片模式忽略此参数。
---version       显示版本号。
+--max-kb N      目标大小（KB），默认 500。可行时输出 ≤ N × 1024 字节。
+--scale F       PDF 输入的起点渲染倍率，1.0–3.0，默认 2.0。图片模式不使用。
+--version       打印版本并退出。
 ```
 
-## 🛠 从源码编译
+### 从源码编译
 
 ```bash
 git clone https://github.com/ViveSieg/compactum.git
@@ -282,47 +272,51 @@ cd compactum
 pip install -r requirements.txt
 python -m compactum
 
-# 自己打包当前平台的二进制
+# 自己编译当前平台的二进制
 pip install pyinstaller
 pyinstaller build/compactum.spec --noconfirm --clean
-# 输出在 dist/ 目录
+# 产物在 dist/ 目录
 ```
 
-推送 `v*` tag 会自动通过 GitHub Actions 编译三平台二进制并发布到 Releases。详见 [`.github/workflows/release.yml`](.github/workflows/release.yml)。
+GitHub Actions 在每次推送 `v*` tag 时编译三平台二进制并附加到 GitHub Release。详见 [`.github/workflows/release.yml`](.github/workflows/release.yml)。
 
-## ❓ 常见问题
+### 常见问题
 
-**Q：输出超过了目标大小，是 bug 吗？**
-A：当目标小到连最低分辨率最低质量都塞不下时，算法会输出最小可行结果并明确告警。**调大目标大小即可。**
+**输出超过目标大小，是 bug 吗？**
+不是。当目标小到连最低分辨率最低质量都塞不下时，算法输出最小可行结果并报告状态。请调大目标。
 
-**Q：能完全离线用吗？**
-A：可以，100% 离线。零联网，文件不离开你的电脑。
+**能完全离线使用吗？**
+能。没有任何联网调用。
 
-**Q：模式 ② 会保留可搜索文字 / 超链接 / 表单字段吗？**
-A：不会。模式 ② 把 PDF 重建成图片版，文字搜索、超链接、表单字段会全部丢失。要保留可搜索文字请用模式 ①。如果你需要的是"压缩了还能搜索"的 PDF，本工具不适合。
+**模式 ② 会保留可搜索文字、超链接、表单字段吗？**
+不会。模式 ② 把 PDF 重建成图片数据。如果需要保留这些，应使用模式 ①（仅按图片保真度处理，但同样不带可搜索文字）。Compactum 不输出"既小又可搜索"的 PDF。
 
-**Q：可以商用吗？**
-A：**不可以**。本项目采用 PolyForm Noncommercial 1.0.0 许可。商业用途请通过 GitHub 联系作者。
+**能商用吗？**
+不能。本项目使用 PolyForm Noncommercial 1.0.0 许可。商业使用请通过 GitHub 联系作者。
 
 ---
 
-## 📦 Project layout
+## Project layout
 
 ```text
 compactum/
 ├── src/compactum/
-│   ├── core.py             # size-bounded compressor (PDFs + images)
-│   ├── gui.py              # pywebview bridge
-│   ├── cli.py              # CLI entry points
-│   └── webui/              # bilingual HTML/CSS/JS frontend
+│   ├── core.py             Size-bounded compressor for PDFs and images.
+│   ├── gui.py              pywebview backend / JS bridge.
+│   ├── cli.py              CLI entry points.
+│   └── webui/              Bilingual HTML / CSS / JS frontend.
 │       ├── index.html
 │       ├── style.css
 │       ├── app.js
-│       ├── donate/         # support-the-author QR codes
-│       └── fonts/          # Marianne (Etalab Open License)
-├── build/compactum.spec    # PyInstaller spec (Win/Mac/Linux)
+│       ├── donate/         QR codes for donations.
+│       └── fonts/          Marianne (Etalab Open License).
+├── build/
+│   ├── compactum.spec      PyInstaller spec.
+│   ├── icon.icns           macOS icon.
+│   ├── icon.ico            Windows icon.
+│   └── icon.png            Linux icon.
 ├── .github/workflows/
-│   └── release.yml         # auto-build on v* tags
+│   └── release.yml         Build pipeline for v* tags.
 ├── assets/
 │   ├── logo.svg
 │   └── wordmark.svg
@@ -334,30 +328,21 @@ compactum/
 
 ---
 
-## 📄 License · 许可
+## License · 许可
 
-[**PolyForm Noncommercial License 1.0.0**](LICENSE)
+[PolyForm Noncommercial License 1.0.0](LICENSE).
 
-Free for personal, educational, research, government, charitable, and other non-commercial uses. **Commercial use is not permitted.** For commercial licensing, contact the author via GitHub.
+Free for personal, educational, research, governmental, charitable, and other non-commercial use. Commercial use is not permitted. For commercial licensing, contact the author via GitHub.
 
-个人 / 教育 / 研究 / 公益 / 政府用途免费。**禁止商业使用。** 商业授权请通过 GitHub 联系作者。
+允许个人、教育、研究、政府、公益等非商业用途使用，禁止商业使用。商业授权请通过 GitHub 联系作者。
 
 Copyright (c) 2026 ViveSieg. All rights reserved.
 
 ---
 
-## 🙌 Credits
+## Credits
 
-- PDF rendering — [pypdfium2](https://github.com/pypdfium2-team/pypdfium2)
-- Image encoding — [Pillow](https://python-pillow.org/)
-- Desktop wrapper — [pywebview](https://pywebview.flowrl.com/)
+- PDF rendering: [pypdfium2](https://github.com/pypdfium2-team/pypdfium2)
+- Image encoding: [Pillow](https://python-pillow.org/)
+- Desktop wrapper: [pywebview](https://pywebview.flowrl.com/)
 - Marianne font © Etalab — [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/)
-
----
-
-<div align="center">
-
-**If Compactum saved you some pain, [⭐ star the repo](https://github.com/ViveSieg/compactum) — it costs nothing and means a lot.**
-**如果本工具帮到了你，[⭐ 点个 star](https://github.com/ViveSieg/compactum) 是对作者最大的鼓励。**
-
-</div>
