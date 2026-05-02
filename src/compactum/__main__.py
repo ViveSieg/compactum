@@ -1,6 +1,6 @@
-"""Run the GUI: `python -m compactum`."""
+"""Run the GUI via `python -m compactum` or the bundled binary."""
 
-from .cli import gui_main
+from compactum.cli import gui_main
 
 if __name__ == "__main__":
     raise SystemExit(gui_main())

@@ -1,5 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller spec — single-file GUI bundle for Compactum."""
+"""PyInstaller spec for Compactum.
+
+- macOS: onedir mode wrapped in a .app bundle (avoids the onefile-vs-Gatekeeper crash).
+- Windows / Linux: onefile, single self-contained binary.
+"""
 
 import sys
 from pathlib import Path
@@ -23,7 +27,6 @@ datas = [
     (str(SRC / "webui"), "compactum/webui"),
 ]
 
-# pywebview platform-specific hidden imports
 hidden = [
     "pypdfium2_raw",
     "PIL._tkinter_finder",
@@ -51,32 +54,38 @@ a = Analysis(
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    [],
-    name="Compactum",
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=False,
-    runtime_tmpdir=None,
-    console=False,
-    disable_windowed_traceback=False,
-    argv_emulation=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-    icon=icon_path,
-)
-
-# macOS .app bundle
 if sys.platform == "darwin":
-    app = BUNDLE(
+    # ---- macOS: onedir + .app bundle ----
+    exe = EXE(
+        pyz,
+        a.scripts,
+        [],
+        exclude_binaries=True,
+        name="Compactum",
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=False,
+        console=False,
+        disable_windowed_traceback=False,
+        argv_emulation=False,
+        target_arch=None,
+        codesign_identity=None,
+        entitlements_file=None,
+        icon=icon_path,
+    )
+    coll = COLLECT(
         exe,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        strip=False,
+        upx=False,
+        upx_exclude=[],
+        name="Compactum",
+    )
+    app = BUNDLE(
+        coll,
         name="Compactum.app",
         icon=icon_path,
         bundle_identifier="com.vivesieg.compactum",
@@ -89,4 +98,27 @@ if sys.platform == "darwin":
             "NSRequiresAquaSystemAppearance": False,
             "LSMinimumSystemVersion": "10.13",
         },
+    )
+else:
+    # ---- Windows / Linux: onefile ----
+    exe = EXE(
+        pyz,
+        a.scripts,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        [],
+        name="Compactum",
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=False,
+        runtime_tmpdir=None,
+        console=False,
+        disable_windowed_traceback=False,
+        argv_emulation=False,
+        target_arch=None,
+        codesign_identity=None,
+        entitlements_file=None,
+        icon=icon_path,
     )
