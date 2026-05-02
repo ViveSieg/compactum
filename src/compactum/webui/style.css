@@ -214,8 +214,8 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
   box-shadow: 0 1px 0 rgba(22, 22, 22, 0.04);
   min-height: 0;
 }
-.fr-pane-left { min-height: 280px; }
-.fr-pane-right { padding: 0; overflow-y: auto; }
+.fr-pane-left { min-height: 240px; }
+.fr-pane-right { padding: 0; }
 
 .fr-pane-head {
   padding: 8px 12px;
@@ -287,9 +287,9 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 }
 .fr-radio {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
-  padding: 7px 10px;
+  padding: 6px 10px;
   border: 1px solid var(--border);
   background: var(--surface);
   cursor: pointer;
@@ -299,12 +299,11 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .fr-radio input { position: absolute; opacity: 0; pointer-events: none; }
 .fr-radio-mark {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border: 2px solid var(--bf-grey-500);
   border-radius: 50%;
   flex-shrink: 0;
-  margin-top: 2px;
   position: relative;
   background: var(--surface);
 }
@@ -564,9 +563,9 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 
 .fr-checkbox {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
-  padding: 7px 10px;
+  padding: 6px 10px;
   border: 1px solid var(--border);
   background: var(--surface);
   cursor: pointer;
@@ -576,11 +575,10 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .fr-checkbox input { position: absolute; opacity: 0; pointer-events: none; }
 .fr-checkbox-mark {
   display: inline-block;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 2px solid var(--bf-grey-500);
   flex-shrink: 0;
-  margin-top: 2px;
   position: relative;
   background: var(--surface);
 }
@@ -588,10 +586,10 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .fr-checkbox input:checked + .fr-checkbox-mark::after {
   content: "";
   position: absolute;
-  left: 4px;
-  top: 0px;
-  width: 5px;
-  height: 10px;
+  left: 3px;
+  top: -1px;
+  width: 4px;
+  height: 9px;
   border: solid var(--bf-white);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);

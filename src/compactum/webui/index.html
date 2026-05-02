@@ -71,29 +71,20 @@
           <span class="fr-pane-title" data-i18n="step1">Output type</span>
         </div>
         <div class="fr-radio-stack">
-          <label class="fr-radio" data-mode="jpg">
+          <label class="fr-radio" data-mode="jpg" title="One JPG per page. Each ≤ target size.">
             <input type="radio" name="mode" value="jpg" checked />
             <span class="fr-radio-mark"></span>
-            <span class="fr-radio-body">
-              <span class="fr-radio-title" data-i18n="mode_jpg_title">PDF → Images</span>
-              <span class="fr-radio-hint" data-i18n="mode_jpg_hint">One JPG per page. Each ≤ target size.</span>
-            </span>
+            <span class="fr-radio-title" data-i18n="mode_jpg_title">PDF → Images</span>
           </label>
-          <label class="fr-radio" data-mode="pdf">
+          <label class="fr-radio" data-mode="pdf" title="Whole PDF rebuilt ≤ target size.">
             <input type="radio" name="mode" value="pdf" />
             <span class="fr-radio-mark"></span>
-            <span class="fr-radio-body">
-              <span class="fr-radio-title" data-i18n="mode_pdf_title">PDF → Smaller PDF</span>
-              <span class="fr-radio-hint" data-i18n="mode_pdf_hint">Whole PDF rebuilt ≤ target size.</span>
-            </span>
+            <span class="fr-radio-title" data-i18n="mode_pdf_title">PDF → Smaller PDF</span>
           </label>
-          <label class="fr-radio" data-mode="image">
+          <label class="fr-radio" data-mode="image" title="Single image shrunk to target size.">
             <input type="radio" name="mode" value="image" />
             <span class="fr-radio-mark"></span>
-            <span class="fr-radio-body">
-              <span class="fr-radio-title" data-i18n="mode_image_title">Image → Smaller JPG</span>
-              <span class="fr-radio-hint" data-i18n="mode_image_hint">Single image (JPG / PNG / WebP / …) shrunk to target size.</span>
-            </span>
+            <span class="fr-radio-title" data-i18n="mode_image_title">Image → Smaller JPG</span>
           </label>
         </div>
       </div>
@@ -114,34 +105,26 @@
           <label for="customKb" class="fr-input-label" data-i18n="custom_label">Or enter a custom size (KB)</label>
           <input type="number" id="customKb" class="fr-input" min="20" max="51200" step="10" data-i18n-placeholder="custom_placeholder" placeholder="e.g. 350" />
         </div>
-        <label class="fr-checkbox" for="skipLimit">
+        <label class="fr-checkbox" for="skipLimit" title="Original quality, no size cap. Convert only.">
           <input type="checkbox" id="skipLimit" />
           <span class="fr-checkbox-mark"></span>
-          <span class="fr-checkbox-body">
-            <span class="fr-checkbox-title" data-i18n="skip_title">Skip size limit (native quality)</span>
-            <span class="fr-checkbox-hint" data-i18n="skip_hint">Original quality, no size cap. Use when you only need to convert.</span>
-          </span>
+          <span class="fr-checkbox-title" data-i18n="skip_title">Skip size limit (native quality)</span>
         </label>
-      </div>
 
-      <details class="fr-advanced">
-        <summary data-i18n="advanced">Advanced</summary>
-        <div class="fr-advanced-body">
-          <div class="fr-input-group">
-            <label class="fr-input-label" for="scaleRange" data-i18n="scale_label">Render scale (default 2.0×) — applies to PDF inputs only</label>
-            <div class="fr-range-row">
-              <span class="fr-range-edge" data-i18n="scale_low">1× soft</span>
-              <input type="range" id="scaleRange" min="1" max="3" step="0.1" value="2" />
-              <span class="fr-range-edge" data-i18n="scale_high">3× sharp</span>
+        <details class="fr-advanced">
+          <summary data-i18n="advanced">Advanced</summary>
+          <div class="fr-advanced-body">
+            <div class="fr-input-group">
+              <label class="fr-input-label" for="scaleRange" data-i18n="scale_label">Render scale (PDF only, default 2.0×)</label>
+              <div class="fr-range-row">
+                <input type="range" id="scaleRange" min="1" max="3" step="0.1" value="2" />
+                <span class="fr-range-val" id="scaleVal">2.0×</span>
+                <button type="button" class="fr-btn-link" id="resetScale" data-i18n="reset">Reset</button>
+              </div>
             </div>
-            <div class="fr-range-foot">
-              <span class="fr-range-val" id="scaleVal">2.0×</span>
-              <button type="button" class="fr-btn-link" id="resetScale" data-i18n="reset">Reset</button>
-            </div>
-            <p class="fr-input-hint" data-i18n="scale_hint">Higher = sharper image, larger starting size before compression. The size limit is still hard-enforced regardless of this value.</p>
           </div>
-        </div>
-      </details>
+        </details>
+      </div>
 
     </aside>
   </section>
