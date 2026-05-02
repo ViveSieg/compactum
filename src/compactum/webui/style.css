@@ -1,5 +1,5 @@
 /* =========================================================
-   Capsa — DSFR-inspired UI
+   Compactum — UI styles
    Reference: Système de Design de l'État (gouv.fr)
    Primary: Bleu France #000091
    ========================================================= */
@@ -595,6 +595,12 @@ a:hover { color: var(--accent-hover); }
 /* Dimmed state when "skip size limit" is on */
 .fr-control-group.is-disabled .fr-presets,
 .fr-control-group.is-disabled .fr-input-group {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Disabled mode card (e.g. image mode unavailable when only PDFs are dropped) */
+.fr-radio.is-disabled {
   opacity: 0.4;
   pointer-events: none;
 }

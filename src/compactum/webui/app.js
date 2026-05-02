@@ -6,37 +6,43 @@
 
 const $ = (id) => document.getElementById(id);
 
-const DEFAULT_SCALE = 1.5;
+const DEFAULT_SCALE = 2.0;
 const LANG_KEY = "compactum.lang";
 
 const I18N = {
   en: {
     brand_tagline: "Offline · Free · Non-commercial",
-    step1: "Pick output",
-    step2: "Drop your PDF",
+    step1: "Output type",
+    step2: "Drop your file",
     step3: "Target size",
     mode_jpg_title: "PDF → Images",
     mode_jpg_hint: "One JPG per page. Each ≤ target size.",
     mode_pdf_title: "PDF → Smaller PDF",
     mode_pdf_hint: "Whole PDF rebuilt ≤ target size.",
-    drop_title: "Drop a PDF here",
+    mode_image_title: "Image → Smaller JPG",
+    mode_image_hint: "Single image (JPG / PNG / WebP / …) shrunk to target size.",
+    drop_title: "Drop a PDF or image here",
+    drop_title_pdf: "Drop a PDF here",
+    drop_title_image: "Drop an image here",
     drop_or: "or",
     drop_browse: "Browse files",
-    drop_hint: "Single or multiple PDFs · Stays on your computer",
+    drop_hint: "PDF · JPG · PNG · WebP · BMP · TIFF · GIF · Stays on your computer",
+    drop_hint_pdf: "Single or multiple PDFs · Stays on your computer",
+    drop_hint_image: "JPG · PNG · WebP · BMP · TIFF · GIF · Stays on your computer",
     clear_files: "Clear files",
     custom_label: "Or enter a custom size (KB)",
     custom_placeholder: "e.g. 350",
     skip_title: "Skip size limit (native quality)",
     skip_hint: "Output at original render quality, no size cap. Use when you only need to convert.",
     advanced: "Advanced",
-    scale_label: "Render scale (default 1.5×)",
+    scale_label: "Render scale (default 2.0×) — applies to PDF inputs only",
     scale_low: "1× soft",
     scale_high: "3× sharp",
     scale_hint: "Higher = sharper image, larger starting size before compression. The size limit is still hard-enforced regardless of this value.",
     reset: "Reset",
     btn_start: "Start",
     btn_running: "Working…",
-    actions_hint: "Output is saved next to the original PDF.",
+    actions_hint: "Output is saved next to the original file.",
     processing: "Processing…",
     done: "Done",
     open_folder: "Open output folder",
@@ -58,31 +64,37 @@ const I18N = {
   },
   zh: {
     brand_tagline: "完全离线 · 免费 · 仅限非商用",
-    step1: "选择输出方式",
-    step2: "拖入 PDF",
+    step1: "输出类型",
+    step2: "拖入文件",
     step3: "目标大小",
     mode_jpg_title: "PDF → 图片",
     mode_jpg_hint: "每页一张 JPG，每张 ≤ 目标大小",
     mode_pdf_title: "PDF → 压缩 PDF",
     mode_pdf_hint: "整份 PDF 重建为图片版，整体 ≤ 目标大小",
-    drop_title: "把 PDF 拖到这里",
+    mode_image_title: "图片 → 压缩 JPG",
+    mode_image_hint: "单张图片（JPG / PNG / WebP …）压到目标大小",
+    drop_title: "拖入 PDF 或图片",
+    drop_title_pdf: "把 PDF 拖到这里",
+    drop_title_image: "把图片拖到这里",
     drop_or: "或者",
     drop_browse: "浏览文件",
-    drop_hint: "支持单个或多个 PDF · 文件不会离开你的电脑",
+    drop_hint: "PDF · JPG · PNG · WebP · BMP · TIFF · GIF · 文件不会离开你的电脑",
+    drop_hint_pdf: "支持单个或多个 PDF · 文件不会离开你的电脑",
+    drop_hint_image: "JPG · PNG · WebP · BMP · TIFF · GIF · 文件不会离开你的电脑",
     clear_files: "清除文件",
     custom_label: "或输入自定义大小（KB）",
     custom_placeholder: "例如 350",
     skip_title: "不压缩，保留原始画质",
     skip_hint: "按原渲染画质输出，不限制文件大小。仅当你只需要格式转换时使用。",
     advanced: "高级选项",
-    scale_label: "渲染倍率（默认 1.5×）",
+    scale_label: "渲染倍率（默认 2.0×）— 仅 PDF 输入有效",
     scale_low: "1× 模糊",
     scale_high: "3× 清晰",
     scale_hint: "数值越大越清晰、压缩前的起点文件越大；目标 KB 上限仍然会强制硬命中。",
     reset: "恢复默认",
     btn_start: "开始",
     btn_running: "处理中…",
-    actions_hint: "输出会自动保存在原 PDF 旁边。",
+    actions_hint: "输出会自动保存在原文件旁边。",
     processing: "处理中…",
     done: "完成",
     open_folder: "打开输出位置",
@@ -134,7 +146,7 @@ function applyI18n(lang) {
     b.classList.toggle("is-active", b.dataset.lang === lang);
   });
 
-  // re-render the file list since the empty/disabled states use translated text
+  applyDropText();
   renderFiles();
 }
 
@@ -175,7 +187,7 @@ function api() {
 
 document.querySelectorAll('input[name="mode"]').forEach((el) => {
   el.addEventListener("change", () => {
-    if (el.checked) state.mode = el.value;
+    if (el.checked) setMode(el.value);
   });
 });
 
@@ -242,6 +254,7 @@ $("filePicker").addEventListener("change", () => {
 $("clearBtn").addEventListener("click", () => {
   state.files = [];
   renderFiles();
+  applyModeAvailability();
 });
 
 const drop = $("drop");
@@ -279,6 +292,66 @@ function addFiles(picked) {
     if (!known.has(f.path)) state.files.push(f);
   }
   renderFiles();
+  autoSelectMode();
+}
+
+const IMAGE_EXT = /\.(jpg|jpeg|png|webp|bmp|tif|tiff|gif|heic|heif)$/i;
+const PDF_EXT = /\.pdf$/i;
+
+function autoSelectMode() {
+  if (state.files.length === 0) return;
+  const allImages = state.files.every((f) => IMAGE_EXT.test(f.name));
+  const anyPdf = state.files.some((f) => PDF_EXT.test(f.name));
+  if (allImages && state.mode !== "image") setMode("image");
+  else if (anyPdf && state.mode === "image") setMode("jpg");
+  applyModeAvailability();
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll('input[name="mode"]').forEach((el) => {
+    el.checked = el.value === mode;
+  });
+  applyDropText();
+  applyAdvancedVisibility();
+}
+
+function applyDropText() {
+  const dict = I18N[state.lang] || I18N.en;
+  const titleEl = document.querySelector('.fr-drop-title');
+  const hintEl = document.querySelector('.fr-drop-hint');
+  if (state.mode === "image") {
+    if (titleEl) titleEl.textContent = dict.drop_title_image;
+    if (hintEl) hintEl.textContent = dict.drop_hint_image;
+  } else if (state.mode === "jpg" || state.mode === "pdf") {
+    if (titleEl) titleEl.textContent = dict.drop_title_pdf;
+    if (hintEl) hintEl.textContent = dict.drop_hint_pdf;
+  } else {
+    if (titleEl) titleEl.textContent = dict.drop_title;
+    if (hintEl) hintEl.textContent = dict.drop_hint;
+  }
+}
+
+function applyAdvancedVisibility() {
+  const adv = document.querySelector('.fr-advanced');
+  if (!adv) return;
+  adv.hidden = (state.mode === "image");
+}
+
+function applyModeAvailability() {
+  if (state.files.length === 0) {
+    document.querySelectorAll('.fr-radio[data-mode]').forEach((el) => el.classList.remove("is-disabled"));
+    return;
+  }
+  const allImages = state.files.every((f) => IMAGE_EXT.test(f.name));
+  const allPdfs = state.files.every((f) => PDF_EXT.test(f.name));
+  document.querySelectorAll('.fr-radio[data-mode]').forEach((el) => {
+    const m = el.dataset.mode;
+    const ok = (m === "image" && allImages) || (m !== "image" && allPdfs) || (!allImages && !allPdfs);
+    el.classList.toggle("is-disabled", !ok);
+    const input = el.querySelector("input");
+    if (input) input.disabled = !ok;
+  });
 }
 
 function renderFiles() {

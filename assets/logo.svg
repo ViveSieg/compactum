@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Compactum">
-  <!-- Compression mark — two opposing arrows squeeze toward a thin core.
-       DSFR aligned: sharp corners, Bleu France #000091, two elements only. -->
-  <g fill="#000091">
-    <polygon points="6,12 6,52 30,32"/>
-    <polygon points="58,12 58,52 34,32"/>
-  </g>
+  <rect x="8" y="8" width="48" height="48" fill="#000091"/>
+  <rect x="18" y="22" width="28" height="3" fill="#ffffff"/>
+  <rect x="20" y="30" width="24" height="3" fill="#ffffff"/>
+  <rect x="22" y="38" width="20" height="3" fill="#ffffff"/>
 </svg>

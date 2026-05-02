@@ -47,6 +47,7 @@ Issues = "https://github.com/ViveSieg/compactum/issues"
 compactum = "compactum.cli:gui_main"
 compactum-jpg = "compactum.cli:jpg_main"
 compactum-pdf = "compactum.cli:pdf_main"
+compactum-img = "compactum.cli:img_main"
 
 [project.gui-scripts]
 "Compactum" = "compactum.cli:gui_main"

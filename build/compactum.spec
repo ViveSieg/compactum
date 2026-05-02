@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller spec — single-file GUI bundle for Capsa."""
+"""PyInstaller spec — single-file GUI bundle for Compactum."""
 
 import sys
 from pathlib import Path
@@ -7,10 +7,10 @@ from pathlib import Path
 block_cipher = None
 
 ROOT = Path(SPECPATH).resolve().parent
-SRC = ROOT / "src" / "capsapdf"
+SRC = ROOT / "src" / "compactum"
 
 datas = [
-    (str(SRC / "webui"), "capsa/webui"),
+    (str(SRC / "webui"), "compactum/webui"),
 ]
 
 # pywebview platform-specific hidden imports

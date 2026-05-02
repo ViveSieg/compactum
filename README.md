@@ -16,80 +16,76 @@ A polished cross-platform desktop app for shrinking PDFs and images to **a hard 
 
 ---
 
-## 🇨🇳 中文 · 快速开始
+## ⬇️ Download · 下载
 
-### 方式 1 · 下载即用（推荐给电脑小白）
+> Pre-built binaries are published on the [**Releases page**](https://github.com/ViveSieg/compactum/releases/latest). No Python install needed — just download, unzip, double-click.
+> 全部三平台二进制都在 [**Releases 页面**](https://github.com/ViveSieg/compactum/releases/latest)。**不需要装 Python**——下载、解压、双击即可。
 
-去 [Releases 页面](https://github.com/ViveSieg/compactum/releases/latest) 下载对应你系统的版本：
-
-| 系统 | 下载文件 | 用法 |
+| Platform · 系统 | Direct download · 直接下载 | What to do · 用法 |
 |---|---|---|
-| **Windows** | `Compactum-Windows.zip` | 解压，双击 `Compactum.exe` |
-| **macOS** | `Compactum-macOS.zip` | 解压，双击 `Compactum.app` |
-| **Linux** | `Compactum-Linux.tar.gz` | 解压，运行 `./Compactum` |
+| **Windows** 10 / 11 | [Compactum-Windows.zip](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Windows.zip) | Unzip · double-click `Compactum.exe`<br/>解压、双击 `Compactum.exe` |
+| **macOS** 10.13+ | [Compactum-macOS.zip](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.zip) | Unzip · drag `Compactum.app` to Applications · open<br/>解压、把 `Compactum.app` 拖进"应用程序"、打开 |
+| **Linux** | [Compactum-Linux.tar.gz](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Linux.tar.gz) | Untar · `./Compactum`<br/>解压、运行 `./Compactum` |
 
-> ⚠️ macOS 第一次打开可能会提示"无法验证开发者"。右键 → 打开 → 仍要打开。
+> ⚠️ **macOS Gatekeeper**: first launch may show "cannot verify developer" — **right-click → Open → Open anyway**.
+> macOS 第一次打开可能提示"无法验证开发者"——**右键 → 打开 → 仍要打开**。
+
+---
+
+## 🇨🇳 中文 · 快速开始
 
 打开后：
 
-1. 选择模式 —— **PDF → 图片**（每页一张 JPG）或 **PDF → 压缩 PDF**（整份）
-2. 把 PDF 拖进窗口（或点 Browse files 选）
-3. 选目标大小（200 KB / 500 KB / 1 MB / 2 MB / 自定义）
+1. 选择**输出类型** —— PDF → 图片 / PDF → 压缩 PDF / 图片 → 压缩 JPG
+2. 把文件拖进窗口（或点 *Browse files* 选）—— PDF / JPG / PNG / WebP / BMP / TIFF / GIF 都行
+3. 选目标大小（200 KB / 500 KB / 1 MB / 2 MB / 5 MB / 自定义）
 4. 点 **Start**
 
-输出会自动保存在**原 PDF 同目录**下：
-- 模式 A → `<文件名>_jpg_500kb/` 文件夹（里面是每页一张的 JPG）
-- 模式 B → `<文件名>_compressed_500kb.pdf` 单文件
+输出会自动保存在**原文件同目录**下：
+- PDF→图片 → `<文件名>_jpg_500kb/` 文件夹（每页一张 JPG）
+- PDF→压缩 PDF → `<文件名>_compressed_500kb.pdf`
+- 图片→压缩 → `<文件名>_500kb.jpg`
 
-### 方式 2 · 装 Python 包
+### 进阶：装成 Python 包用 CLI
 
 ```bash
 git clone https://github.com/ViveSieg/compactum.git
 cd compactum
 pip install -e .
 
-compactum        # 打开 GUI
-compactum-jpg input.pdf --max-kb 500   # 命令行：转 JPG
-compactum-pdf input.pdf --max-kb 500   # 命令行：压缩 PDF
+compactum                              # 打开 GUI
+compactum-jpg input.pdf  --max-kb 500  # PDF → 多张 JPG
+compactum-pdf input.pdf  --max-kb 500  # PDF → 压缩 PDF
+compactum-img photo.png  --max-kb 500  # 图片 → 压缩 JPG
 ```
 
 ---
 
 ## 🇺🇸 English · Quick start
 
-### Option 1 · Download a prebuilt binary (recommended)
+After launching:
 
-Grab the right file from [Releases](https://github.com/ViveSieg/compactum/releases/latest):
+1. Pick the **output type** — PDF → Images / PDF → Smaller PDF / Image → Smaller JPG
+2. Drop a file (or click *Browse files*) — PDF / JPG / PNG / WebP / BMP / TIFF / GIF supported
+3. Choose a target size (200 KB / 500 KB / 1 MB / 2 MB / 5 MB / custom)
+4. Click **Start**
 
-| Platform | Download | How to run |
-|---|---|---|
-| **Windows** | `Compactum-Windows.zip` | Unzip, double-click `Compactum.exe` |
-| **macOS** | `Compactum-macOS.zip` | Unzip, double-click `Compactum.app` |
-| **Linux** | `Compactum-Linux.tar.gz` | Untar, run `./Compactum` |
+The output lands next to your original file:
+- PDF → Images → folder `<name>_jpg_500kb/` (one JPG per page)
+- PDF → Smaller PDF → `<name>_compressed_500kb.pdf`
+- Image → Smaller JPG → `<name>_500kb.jpg`
 
-> ⚠️ macOS Gatekeeper may block on first launch. Right-click → Open → Open anyway.
-
-Then:
-
-1. Pick a mode — **PDF → Images** (one JPG per page) or **PDF → Smaller PDF**.
-2. Drop a PDF in (or click *Browse files*).
-3. Choose a target size (200 KB / 500 KB / 1 MB / 2 MB / custom).
-4. Click **Start**.
-
-The output is saved next to your original PDF:
-- Mode A → folder `<name>_jpg_500kb/` with one JPG per page.
-- Mode B → file `<name>_compressed_500kb.pdf`.
-
-### Option 2 · Install as a Python package
+### Power users: install as a Python package
 
 ```bash
 git clone https://github.com/ViveSieg/compactum.git
 cd compactum
 pip install -e .
 
-compactum        # launches the GUI
-compactum-jpg input.pdf --max-kb 500
-compactum-pdf input.pdf --max-kb 500
+compactum                              # launch the GUI
+compactum-jpg input.pdf  --max-kb 500  # PDF → multiple JPGs
+compactum-pdf input.pdf  --max-kb 500  # PDF → smaller PDF
+compactum-img photo.png  --max-kb 500  # image → smaller JPG
 ```
 
 ---

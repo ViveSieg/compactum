@@ -12,8 +12,10 @@
   <div class="fr-header-inner">
     <div class="fr-brand">
       <svg class="fr-brand-mark" viewBox="0 0 64 64" aria-hidden="true">
-        <polygon points="6,12 6,52 30,32" fill="#000091"/>
-        <polygon points="58,12 58,52 34,32" fill="#000091"/>
+        <rect x="8" y="8" width="48" height="48" fill="#000091"/>
+        <rect x="18" y="22" width="28" height="3" fill="#ffffff"/>
+        <rect x="20" y="30" width="24" height="3" fill="#ffffff"/>
+        <rect x="22" y="38" width="20" height="3" fill="#ffffff"/>
       </svg>
       <div class="fr-brand-text">
         <p class="fr-brand-name">Compactum</p>
@@ -66,11 +68,10 @@
       <div class="fr-control-group" id="modeGroup">
         <div class="fr-control-head">
           <span class="fr-pane-num">2</span>
-          <span class="fr-pane-title" data-i18n="step1">PDF output type</span>
-          <span class="fr-control-aside" data-i18n="pdf_only">PDF only</span>
+          <span class="fr-pane-title" data-i18n="step1">Output type</span>
         </div>
         <div class="fr-radio-stack">
-          <label class="fr-radio">
+          <label class="fr-radio" data-mode="jpg">
             <input type="radio" name="mode" value="jpg" checked />
             <span class="fr-radio-mark"></span>
             <span class="fr-radio-body">
@@ -78,12 +79,20 @@
               <span class="fr-radio-hint" data-i18n="mode_jpg_hint">One JPG per page. Each ≤ target size.</span>
             </span>
           </label>
-          <label class="fr-radio">
+          <label class="fr-radio" data-mode="pdf">
             <input type="radio" name="mode" value="pdf" />
             <span class="fr-radio-mark"></span>
             <span class="fr-radio-body">
               <span class="fr-radio-title" data-i18n="mode_pdf_title">PDF → Smaller PDF</span>
               <span class="fr-radio-hint" data-i18n="mode_pdf_hint">Whole PDF rebuilt ≤ target size.</span>
+            </span>
+          </label>
+          <label class="fr-radio" data-mode="image">
+            <input type="radio" name="mode" value="image" />
+            <span class="fr-radio-mark"></span>
+            <span class="fr-radio-body">
+              <span class="fr-radio-title" data-i18n="mode_image_title">Image → Smaller JPG</span>
+              <span class="fr-radio-hint" data-i18n="mode_image_hint">Single image (JPG / PNG / WebP / …) shrunk to target size.</span>
             </span>
           </label>
         </div>
@@ -119,14 +128,14 @@
         <summary data-i18n="advanced">Advanced</summary>
         <div class="fr-advanced-body">
           <div class="fr-input-group">
-            <label class="fr-input-label" for="scaleRange" data-i18n="scale_label">Render scale (default 1.5×)</label>
+            <label class="fr-input-label" for="scaleRange" data-i18n="scale_label">Render scale (default 2.0×) — applies to PDF inputs only</label>
             <div class="fr-range-row">
               <span class="fr-range-edge" data-i18n="scale_low">1× soft</span>
-              <input type="range" id="scaleRange" min="1" max="3" step="0.1" value="1.5" />
+              <input type="range" id="scaleRange" min="1" max="3" step="0.1" value="2" />
               <span class="fr-range-edge" data-i18n="scale_high">3× sharp</span>
             </div>
             <div class="fr-range-foot">
-              <span class="fr-range-val" id="scaleVal">1.5×</span>
+              <span class="fr-range-val" id="scaleVal">2.0×</span>
               <button type="button" class="fr-btn-link" id="resetScale" data-i18n="reset">Reset</button>
             </div>
             <p class="fr-input-hint" data-i18n="scale_hint">Higher = sharper image, larger starting size before compression. The size limit is still hard-enforced regardless of this value.</p>
