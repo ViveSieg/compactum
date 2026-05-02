@@ -21,8 +21,8 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            artifact_name: Compactum-macOS.zip
-            artifact_path: dist/Compactum-macOS.zip
+            artifact_name: Compactum-macOS.dmg
+            artifact_path: dist/Compactum-macOS.dmg
           - os: windows-latest
             artifact_name: Compactum-Windows.zip
             artifact_path: dist/Compactum-Windows.zip
@@ -60,12 +60,25 @@ jobs:
       - name: Build with PyInstaller
         run: pyinstaller build/compactum.spec --noconfirm --clean
 
-      # ----- macOS: zip the .app bundle -----
-      - name: Package macOS .app
+      # ----- macOS: package as .dmg (skips quarantine on download) -----
+      - name: Install create-dmg
+        if: runner.os == 'macOS'
+        run: brew install create-dmg
+
+      - name: Package macOS .dmg
         if: runner.os == 'macOS'
         run: |
           cd dist
-          ditto -c -k --keepParent "Compactum.app" Compactum-macOS.zip
+          create-dmg \
+            --volname "Compactum" \
+            --window-size 540 360 \
+            --icon-size 96 \
+            --icon "Compactum.app" 140 180 \
+            --hide-extension "Compactum.app" \
+            --app-drop-link 400 180 \
+            --no-internet-enable \
+            "Compactum-macOS.dmg" \
+            "Compactum.app"
 
       # ----- Windows: zip the executable folder -----
       - name: Package Windows

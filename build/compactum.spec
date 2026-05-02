@@ -8,6 +8,16 @@ block_cipher = None
 
 ROOT = Path(SPECPATH).resolve().parent
 SRC = ROOT / "src" / "compactum"
+ICON_ICNS = ROOT / "build" / "icon.icns"
+ICON_ICO = ROOT / "build" / "icon.ico"
+ICON_PNG = ROOT / "build" / "icon.png"
+
+if sys.platform == "darwin":
+    icon_path = str(ICON_ICNS) if ICON_ICNS.exists() else None
+elif sys.platform == "win32":
+    icon_path = str(ICON_ICO) if ICON_ICO.exists() else None
+else:
+    icon_path = str(ICON_PNG) if ICON_PNG.exists() else None
 
 datas = [
     (str(SRC / "webui"), "compactum/webui"),
@@ -60,7 +70,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=str(ROOT / "build" / "icon.icns") if (ROOT / "build" / "icon.icns").exists() else None,
+    icon=icon_path,
 )
 
 # macOS .app bundle
@@ -68,7 +78,7 @@ if sys.platform == "darwin":
     app = BUNDLE(
         exe,
         name="Compactum.app",
-        icon=str(ROOT / "build" / "icon.icns") if (ROOT / "build" / "icon.icns").exists() else None,
+        icon=icon_path,
         bundle_identifier="com.vivesieg.compactum",
         info_plist={
             "CFBundleName": "Compactum",

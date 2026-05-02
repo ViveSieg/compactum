@@ -33,10 +33,14 @@ Designed for visa applications, school portals, government forms, and any system
 | Platform | Download | How to run |
 |---|---|---|
 | **Windows** 10 / 11 | [⬇ Compactum-Windows.zip](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Windows.zip) | Unzip → double-click `Compactum.exe` |
-| **macOS** 10.13+ | [⬇ Compactum-macOS.zip](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.zip) | Unzip → drag `Compactum.app` into Applications |
+| **macOS** 10.13+ | [⬇ Compactum-macOS.dmg](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.dmg) | Open the `.dmg` → drag `Compactum.app` into Applications |
 | **Linux** | [⬇ Compactum-Linux.tar.gz](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Linux.tar.gz) | Untar → `./Compactum` |
 
-> ⚠️ macOS Gatekeeper may say "cannot verify developer" on first launch — **right-click → Open → Open anyway**.
+> ⚠️ **macOS Gatekeeper** may say "cannot verify developer" on first launch — **right-click `Compactum.app` → Open → Open anyway**. If the app silently fails to launch (no window appears, no error), open Terminal and run:
+> ```bash
+> xattr -dr com.apple.quarantine /Applications/Compactum.app
+> ```
+> Then double-click again.
 
 📦 All releases: [github.com/ViveSieg/compactum/releases](https://github.com/ViveSieg/compactum/releases)
 
@@ -173,10 +177,14 @@ A: No. Compactum is licensed under PolyForm Noncommercial 1.0.0. For commercial 
 | 系统 | 下载 | 使用 |
 |---|---|---|
 | **Windows** 10 / 11 | [⬇ Compactum-Windows.zip](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Windows.zip) | 解压 → 双击 `Compactum.exe` |
-| **macOS** 10.13+ | [⬇ Compactum-macOS.zip](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.zip) | 解压 → 把 `Compactum.app` 拖进"应用程序" |
+| **macOS** 10.13+ | [⬇ Compactum-macOS.dmg](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.dmg) | 打开 `.dmg` → 把 `Compactum.app` 拖进"应用程序" |
 | **Linux** | [⬇ Compactum-Linux.tar.gz](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Linux.tar.gz) | 解压 → 运行 `./Compactum` |
 
-> ⚠️ macOS 第一次打开可能会提示"无法验证开发者"——**右键 → 打开 → 仍要打开**。
+> ⚠️ **macOS Gatekeeper**：第一次打开可能提示"无法验证开发者" —— **右键 `Compactum.app` → 打开 → 仍要打开**。如果双击没反应、没窗口、没报错，打开 Terminal 跑一次：
+> ```bash
+> xattr -dr com.apple.quarantine /Applications/Compactum.app
+> ```
+> 然后再双击就行。
 
 📦 所有版本：[github.com/ViveSieg/compactum/releases](https://github.com/ViveSieg/compactum/releases)
 

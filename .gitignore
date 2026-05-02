@@ -7,6 +7,7 @@ __pycache__/
 .Python
 build/*
 !build/*.spec
+!build/icon.*
 develop-eggs/
 dist/
 downloads/
