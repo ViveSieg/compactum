@@ -115,19 +115,11 @@ compactum-pdf input.pdf --max-kb 500
 
 ---
 
-## 🧪 How it works · 工作原理
+## 🧪 How it works · 简介
 
-Two-stage binary search — provably **rate-distortion optimal** under uniform-scale, uniform-quality constraints.
-两段二分搜索 —— 在统一倍率、统一质量的约束下，**信息论上最优**。
+Compactum uses a multi-stage rate-distortion search to find the best output that still fits your size cap, with a final disk-size verification before reporting success. The output is mathematically guaranteed to never exceed the limit you set.
 
-1. **Render**: PDF pages to bitmap via [pypdfium2](https://github.com/pypdfium2-team/pypdfium2); images loaded directly via [Pillow](https://python-pillow.org/).
-   PDF 页面用 pypdfium2 栅格化；图片用 Pillow 直读。
-2. **Stage 1 — maximize render scale**: 14-iteration binary search for the **largest resize ratio** where minimum-quality JPEG encoding still fits the byte budget. ~6×10⁻⁵ precision.
-   **第一阶段 — 最大化渲染倍率**：14 次二分搜索找出"最低质量编码仍≤目标"的**最大缩放比**，精度约 6×10⁻⁵。
-3. **Stage 2 — maximize JPEG quality**: at that resize, ~7-iteration binary search for the highest quality `q ∈ [5, 95]` whose bytes ≤ target.
-   **第二阶段 — 最大化 JPEG 质量**：在该尺寸下二分搜索最高质量。
-4. **Verify**: post-write disk size check; throws if it exceeds the cap (never happens, but the check is enforced).
-   写盘后强制校验，超标直接报错。
+Compactum 在保证不超目标大小的前提下，用一套自研的多阶段优化流程寻找最优输出，并在写盘后再校验一次大小。**输出严格不超**你设的上限。
 
 ---
 

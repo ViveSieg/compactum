@@ -747,8 +747,8 @@ a:hover { color: var(--accent-hover); }
 }
 .fr-donate-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 .fr-donate-card {
   margin: 0;
@@ -756,15 +756,16 @@ a:hover { color: var(--accent-hover); }
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 12px;
+  padding: 10px;
   background: var(--bf-grey-50);
   border: 1px solid var(--border);
 }
 .fr-donate-card img {
   width: 100%;
-  max-width: 200px;
+  max-width: 160px;
   height: auto;
   display: block;
+  background: var(--bf-white);
 }
 .fr-donate-card figcaption {
   font-size: 13px;
@@ -777,7 +778,7 @@ a:hover { color: var(--accent-hover); }
   font-size: 14px;
   color: var(--text-3);
 }
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   .fr-donate-grid { grid-template-columns: 1fr; }
 }
 

@@ -52,8 +52,9 @@ const I18N = {
     donate_intro: "This tool is free for non-commercial use. If it saved you some pain, a small tip is appreciated — but never required.",
     alipay: "Alipay",
     wechat: "WeChat Pay",
+    wise: "Wise (intl.)",
     thanks: "Thank you!",
-    backend_not_ready: "Backend not ready yet — please wait a moment.",
+    backend_not_ready: "App is still loading — please try again in a moment.",
   },
   zh: {
     brand_tagline: "完全离线 · 免费 · 仅限非商用",
@@ -97,8 +98,9 @@ const I18N = {
     donate_intro: "本工具非商用免费。如果对你有帮助，欢迎随心打赏 —— 完全自愿。",
     alipay: "支付宝",
     wechat: "微信支付",
+    wise: "Wise（境外）",
     thanks: "谢谢！",
-    backend_not_ready: "后端还没就绪，请稍等。",
+    backend_not_ready: "应用还在启动，稍等一下再试。",
   },
 };
 
