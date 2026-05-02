@@ -219,9 +219,9 @@ def launch() -> int:
         title=f"Compactum v{__version__}",
         url=index_path.as_uri(),
         js_api=api,
-        width=960,
-        height=720,
-        min_size=(820, 620),
+        width=1000,
+        height=880,
+        min_size=(880, 720),
         resizable=True,
     )
     api.attach(window)
