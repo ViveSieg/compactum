@@ -273,22 +273,44 @@ drop.addEventListener("drop", async (e) => {
   e.preventDefault();
   drop.classList.remove("is-dragging");
 
-  const paths = [];
-  for (const f of e.dataTransfer.files) {
-    if (f.path) paths.push(f.path);
-  }
-  if (paths.length === 0) {
-    // Some webviews don't expose a real path on drop. Ask user to use the picker.
-    showError(t("backend_not_ready"));
+  const files = Array.from(e.dataTransfer.files || []);
+  if (files.length === 0) return;
+
+  // Chromium-style: f.path is exposed → use direct path
+  const paths = files.filter((f) => f.path).map((f) => f.path);
+  if (paths.length === files.length) {
+    try {
+      const resolved = await api().resolveDropped(paths);
+      if (resolved && resolved.length) addFiles(resolved);
+    } catch (err) { showError(String(err.message || err)); }
     return;
   }
+
+  // WKWebView (macOS): no .path. Read bytes, send as base64 to backend.
   try {
-    const resolved = await api().resolveDropped(paths);
+    const items = await Promise.all(files.map(async (f) => ({
+      name: f.name,
+      b64: await readAsBase64(f),
+    })));
+    const resolved = await api().saveDroppedContent(items);
     if (resolved && resolved.length) addFiles(resolved);
   } catch (err) {
     showError(String(err.message || err));
   }
 });
+
+function readAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const r = reader.result || "";
+      const comma = r.indexOf(",");
+      resolve(comma >= 0 ? r.slice(comma + 1) : r);
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
 
 function addFiles(picked) {
   const known = new Set(state.files.map((f) => f.path));

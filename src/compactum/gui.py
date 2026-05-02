@@ -52,9 +52,9 @@ class Api:
             webview.OPEN_DIALOG,
             allow_multiple=True,
             file_types=(
-                "Supported (*.pdf *.jpg *.jpeg *.png *.webp *.bmp *.tif *.tiff *.gif)",
+                "Supported (*.pdf;*.jpg;*.jpeg;*.png;*.webp;*.bmp;*.tif;*.tiff;*.gif)",
                 "PDF files (*.pdf)",
-                "Image files (*.jpg *.jpeg *.png *.webp *.bmp *.tif *.tiff *.gif)",
+                "Image files (*.jpg;*.jpeg;*.png;*.webp;*.bmp;*.tif;*.tiff;*.gif)",
                 "All files (*.*)",
             ),
         )
@@ -69,6 +69,29 @@ class Api:
             if not path.exists() or not self._is_supported(path):
                 continue
             out.append(self._describe(path))
+        return out
+
+    def saveDroppedContent(self, items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Fallback for backends (notably macOS WKWebView) that don't expose
+        a file path on drag-drop. The frontend reads each file as base64 and
+        sends {name, b64}; we write it to a per-session temp dir and return
+        regular file descriptors."""
+        import base64, tempfile
+        if not hasattr(self, "_drop_dir") or self._drop_dir is None:
+            self._drop_dir = Path(tempfile.mkdtemp(prefix="compactum-drop-"))
+        out: list[dict[str, Any]] = []
+        for it in items:
+            name = (it.get("name") or "file").replace("/", "_").replace("\\", "_")
+            b64 = it.get("b64") or ""
+            if not b64:
+                continue
+            target = self._drop_dir / name
+            try:
+                target.write_bytes(base64.b64decode(b64))
+            except Exception:
+                continue
+            if self._is_supported(target):
+                out.append(self._describe(target))
         return out
 
     @staticmethod
@@ -219,9 +242,9 @@ def launch() -> int:
         title=f"Compactum v{__version__}",
         url=index_path.as_uri(),
         js_api=api,
-        width=1000,
-        height=880,
-        min_size=(880, 720),
+        width=900,
+        height=680,
+        min_size=(760, 580),
         resizable=True,
     )
     api.attach(window)
