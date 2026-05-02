@@ -12,9 +12,9 @@ import pypdfium2 as pdfium
 from PIL import Image, ImageOps
 
 
-MIN_QUALITY = 5
+MIN_QUALITY = 1
 MAX_QUALITY = 95
-MIN_SIDE = 64
+MIN_SIDE = 16
 NATIVE_QUALITY = 95
 
 ProgressFn = Callable[[dict], None]
@@ -28,6 +28,7 @@ class JpgResult:
     files: list[Path]
     input_size: int = 0
     total_output_size: int = 0
+    cap_exceeded: bool = False
 
 
 @dataclass
@@ -37,6 +38,7 @@ class PdfResult:
     output_size: int = 0
     effective_scale: float = 0.0
     quality: int = 0
+    cap_exceeded: bool = False
 
 
 @dataclass
@@ -44,6 +46,7 @@ class ImageResult:
     output_path: Path
     input_size: int = 0
     output_size: int = 0
+    cap_exceeded: bool = False
 
 
 def is_image_path(path: Path) -> bool:
@@ -107,7 +110,7 @@ def _resize_image(image: Image.Image, ratio: float) -> Image.Image:
 def _max_ratio_for_image(image: Image.Image, target_bytes: int) -> Image.Image:
     eps = max(MIN_SIDE / image.width, MIN_SIDE / image.height)
     if eps >= 1.0:
-        raise RuntimeError("Already at minimum dimensions; cannot fit target size.")
+        return image
 
     lo, hi = eps, 1.0
     best: Image.Image | None = None
@@ -120,15 +123,12 @@ def _max_ratio_for_image(image: Image.Image, target_bytes: int) -> Image.Image:
         else:
             hi = mid
 
-    if best is None:
-        candidate = _resize_image(image, eps)
-        if len(_encode_jpeg(candidate, MIN_QUALITY)) <= target_bytes:
-            return candidate
-        raise RuntimeError("Cannot fit target size at any feasible resolution.")
-    return best
+    return best if best is not None else _resize_image(image, eps)
 
 
 def _fit_image_to_budget(image: Image.Image, target_bytes: int) -> bytes:
+    """Returns the smallest possible bytes ≤ target if feasible, else the
+    smallest possible output overall (best-effort). Never raises."""
     if len(_encode_jpeg(image, MIN_QUALITY)) > target_bytes:
         image = _max_ratio_for_image(image, target_bytes)
 
@@ -142,9 +142,7 @@ def _fit_image_to_budget(image: Image.Image, target_bytes: int) -> bytes:
             lo = q + 1
         else:
             hi = q - 1
-    if best is None:
-        raise RuntimeError("Could not compress within target.")
-    return best
+    return best if best is not None else _encode_jpeg(image, MIN_QUALITY)
 
 
 def _build_pdf(jpegs: list[bytes], resolution: int) -> bytes:
@@ -179,11 +177,11 @@ def _max_ratio_for_pdf(
     min_h = min(im.height for im in images)
     eps = max(MIN_SIDE / min_w, MIN_SIDE / min_h)
     if eps >= 1.0:
-        raise RuntimeError("Pages already at minimum dimensions.")
+        return images, 1.0
 
     lo, hi = eps, 1.0
     best: list[Image.Image] | None = None
-    best_ratio = 0.0
+    best_ratio = eps
     for step in range(12):
         mid = (lo + hi) / 2
         candidate = _resize_all(images, mid)
@@ -196,12 +194,7 @@ def _max_ratio_for_pdf(
         if progress:
             progress({"file": file_name, "msg": f"Searching maximum scale ({step + 1}/12)…", "percent": min(80, 10 + step * 5)})
 
-    if best is None:
-        candidate = _resize_all(images, eps)
-        if len(_build_at_quality(candidate, MIN_QUALITY, scale * eps)) <= target_bytes:
-            return candidate, eps
-        raise RuntimeError("Cannot fit PDF in target size at any feasible resolution.")
-    return best, best_ratio
+    return (best, best_ratio) if best is not None else (_resize_all(images, eps), eps)
 
 
 def pdf_to_jpgs(
@@ -225,13 +218,13 @@ def pdf_to_jpgs(
     total = len(images)
     files: list[Path] = []
 
+    cap_exceeded = False
     for idx, image in enumerate(images, start=1):
         data = _fit_image_to_budget(image, target_bytes) if compress else _encode_jpeg(image, NATIVE_QUALITY)
         out_path = out_dir / f"{base}_page-{idx:04d}.jpg"
         out_path.write_bytes(data)
-
         if compress and out_path.stat().st_size > target_bytes:
-            raise RuntimeError(f"{out_path.name} exceeded the {target_bytes}-byte hard limit.")
+            cap_exceeded = True
         files.append(out_path)
 
         if progress:
@@ -248,6 +241,7 @@ def pdf_to_jpgs(
         files=files,
         input_size=pdf_path.stat().st_size,
         total_output_size=sum(p.stat().st_size for p in files),
+        cap_exceeded=cap_exceeded,
     )
 
 
@@ -311,8 +305,7 @@ def pdf_to_compressed_pdf(
             hi = q - 1
 
     out_path.write_bytes(best)
-    if out_path.stat().st_size > target_bytes:
-        raise RuntimeError(f"Output PDF exceeded the {target_bytes}-byte hard limit.")
+    cap_exceeded = out_path.stat().st_size > target_bytes
     if progress:
         progress({"file": pdf_path.name, "msg": "Done", "percent": 100})
     return PdfResult(
@@ -321,6 +314,7 @@ def pdf_to_compressed_pdf(
         output_size=out_path.stat().st_size,
         effective_scale=eff_scale,
         quality=best_q,
+        cap_exceeded=cap_exceeded,
     )
 
 
@@ -352,9 +346,7 @@ def compress_image(
 
     data = _fit_image_to_budget(image, target_bytes) if compress else _encode_jpeg(image, NATIVE_QUALITY)
     out_path.write_bytes(data)
-
-    if compress and out_path.stat().st_size > target_bytes:
-        raise RuntimeError(f"{out_path.name} exceeded the {target_bytes}-byte hard limit.")
+    cap_exceeded = bool(compress and out_path.stat().st_size > target_bytes)
 
     if progress:
         progress({"file": image_path.name, "msg": "Done", "percent": 100})
@@ -363,4 +355,5 @@ def compress_image(
         output_path=out_path,
         input_size=image_path.stat().st_size,
         output_size=out_path.stat().st_size,
+        cap_exceeded=cap_exceeded,
     )

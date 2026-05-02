@@ -110,6 +110,8 @@ class Api:
                 overall = int((file_idx + pct / 100) / total_files * 100)
                 payload = dict(info)
                 payload["percent"] = overall
+                payload["file_idx"] = file_idx + 1
+                payload["total_files"] = total_files
                 self._push_progress(payload)
             return cb
 
@@ -130,6 +132,7 @@ class Api:
                     "name": file_path.name,
                     "input_size": img_result.input_size,
                     "output_size": img_result.output_size,
+                    "cap_exceeded": img_result.cap_exceeded,
                 })
                 continue
 
@@ -147,6 +150,7 @@ class Api:
                     "input_size": jpg_result.input_size,
                     "output_size": jpg_result.total_output_size,
                     "page_count": len(jpg_result.files),
+                    "cap_exceeded": jpg_result.cap_exceeded,
                 })
             elif mode == "pdf":
                 pdf_result = core.pdf_to_compressed_pdf(
@@ -163,6 +167,7 @@ class Api:
                     "effective_scale": round(pdf_result.effective_scale, 3),
                     "input_scale": scale,
                     "quality": pdf_result.quality,
+                    "cap_exceeded": pdf_result.cap_exceeded,
                 })
             else:
                 raise ValueError(f"Unknown mode: {mode}")

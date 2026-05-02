@@ -45,6 +45,8 @@ const I18N = {
     actions_hint: "Output is saved next to the original file.",
     processing: "Processing…",
     done: "Done",
+    done_warning: "Done — but couldn't hit the size cap",
+    cap_exceeded_msg: "The output is already at the minimum feasible size; further compression would destroy the content. Try a larger target size.",
     open_folder: "Open output folder",
     another: "Process another",
     error_title: "Something went wrong",
@@ -97,6 +99,8 @@ const I18N = {
     actions_hint: "输出会自动保存在原文件旁边。",
     processing: "处理中…",
     done: "完成",
+    done_warning: "完成 —— 但没能压到目标大小",
+    cap_exceeded_msg: "已经压到最小可行的尺寸了，再小内容就毁了。请改大目标大小。",
     open_folder: "打开输出位置",
     another: "再处理一个",
     error_title: "出错了",
@@ -427,21 +431,36 @@ window.shrinkProgress = (info) => {
   if (info.msg) $("progressTitle").textContent = info.msg;
   if (typeof info.percent === "number") $("progressFill").style.width = `${info.percent}%`;
   if (info.file) {
+    const fileTxt = (info.total_files && info.total_files > 1)
+      ? `[${info.file_idx}/${info.total_files}] ${info.file}`
+      : info.file;
     const pageTxt = info.page != null ? ` · ${info.page}/${info.total}` : "";
-    $("progressText").textContent = `${info.file}${pageTxt}`;
+    $("progressText").textContent = `${fileTxt}${pageTxt}`;
   }
 };
 
 function showResult(result) {
-  $("result").hidden = false;
+  const resultEl = $("result");
+  resultEl.hidden = false;
+
+  const stats = (result && result.stats) || [];
+  const anyExceeded = stats.some((s) => s && s.cap_exceeded);
+
+  resultEl.classList.toggle("fr-alert-success", !anyExceeded);
+  resultEl.classList.toggle("fr-alert-warning", anyExceeded);
+  $("resultTitle").textContent = anyExceeded ? t("done_warning") : t("done");
+
+  const warnEl = $("resultWarning");
+  warnEl.hidden = !anyExceeded;
+  if (anyExceeded) warnEl.textContent = t("cap_exceeded_msg");
+
   if (result && result.outputs && result.outputs.length) {
-    const lines = result.outputs.map((o, i) => formatStatLine(o, (result.stats || [])[i])).join("\n");
-    $("resultPath").textContent = lines;
+    $("resultPath").textContent = result.outputs.map((o, i) => formatStatLine(o, stats[i])).join("\n");
     $("openFolderBtn").dataset.path = result.outputs[0];
   } else {
     $("resultPath").textContent = "—";
   }
-  fireConfetti();
+  if (!anyExceeded) fireConfetti();
   maybeShowFirstSuccessDonate();
 }
 

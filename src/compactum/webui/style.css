@@ -659,6 +659,7 @@ a:hover { color: var(--accent-hover); }
 }
 .fr-alert-info { border-left-color: var(--accent); background: var(--accent-soft); }
 .fr-alert-success { border-left-color: var(--bf-green); background: var(--bf-green-soft); }
+.fr-alert-warning { border-left-color: #b34000; background: #fff4d4; }
 .fr-alert-error { border-left-color: var(--bf-red); background: var(--bf-red-soft); }
 .fr-alert-body { flex: 1; min-width: 0; }
 .fr-alert-title {
