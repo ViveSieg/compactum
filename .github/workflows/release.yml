@@ -137,7 +137,7 @@ jobs:
       - name: Flatten
         run: |
           mkdir -p release-files
-          find artifacts -type f \( -name "*.zip" -o -name "*.tar.gz" -o -name "*.whl" -o -name "*.tar.gz" \) -exec cp {} release-files/ \;
+          find artifacts -type f \( -name "*.zip" -o -name "*.tar.gz" -o -name "*.whl" -o -name "*.dmg" \) -exec cp {} release-files/ \;
           ls -la release-files
 
       - name: Create Release
