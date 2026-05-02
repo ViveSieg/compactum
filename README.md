@@ -36,7 +36,13 @@ Pre-built binaries are published on the [Releases page](https://github.com/ViveS
 | macOS 10.13+ | [Compactum-macOS.dmg](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.dmg) | Open the `.dmg`, drag `Compactum.app` into Applications, then open it from Applications. |
 | Linux | [Compactum-Linux.tar.gz](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Linux.tar.gz) | Extract the archive and run `./Compactum`. |
 
-> **macOS note.** The build is not signed with an Apple Developer ID. On the first launch, Gatekeeper may say "cannot verify developer". Right-click `Compactum.app` → **Open** → **Open** in the dialog. If the app does not open at all (no window, no error), open Terminal and run:
+> **macOS first launch.** The build is not signed with an Apple Developer ID, so Gatekeeper blocks the first launch.
+>
+> 1. Try to open `Compactum.app` once. macOS will show a "cannot verify developer" dialog. Click **Done** or **Cancel**.
+> 2. Open **System Settings → Privacy & Security**, scroll down to the *Security* section, and click **Open Anyway** next to the line that mentions Compactum.
+> 3. Confirm in the next dialog. The app opens. Subsequent launches do not trigger this prompt.
+>
+> If the app still does not launch (no window, no error in System Settings), open Terminal and run:
 > ```bash
 > xattr -dr com.apple.quarantine /Applications/Compactum.app
 > ```
@@ -175,7 +181,13 @@ No. The license is PolyForm Noncommercial 1.0.0. Contact the author via GitHub f
 | macOS 10.13+ | [Compactum-macOS.dmg](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-macOS.dmg) | 打开 `.dmg`，把 `Compactum.app` 拖进"应用程序"文件夹，再从"应用程序"里打开。 |
 | Linux | [Compactum-Linux.tar.gz](https://github.com/ViveSieg/compactum/releases/latest/download/Compactum-Linux.tar.gz) | 解压后运行 `./Compactum`。 |
 
-> **macOS 说明。** 当前版本没有 Apple Developer ID 签名，首次打开可能提示"无法验证开发者"。右键 `Compactum.app` → 打开 → 在对话框中再次点"打开"。如果双击完全没反应（没窗口、没报错），打开 Terminal 跑一次：
+> **macOS 首次打开。** 当前版本没有 Apple Developer ID 签名，首次启动会被 Gatekeeper 拦下。
+>
+> 1. 先双击 `Compactum.app`，会弹出"无法验证开发者"提示，点**完成**或**取消**关掉。
+> 2. 打开**系统设置 → 隐私与安全性**，下拉到"安全性"区域，会看到一行提示 Compactum 被阻止，点旁边的**仍要打开**。
+> 3. 弹出确认框再点一次"打开"，应用就启动了。之后再打开就不会再有提示。
+>
+> 如果还是打不开（没窗口、系统设置里也没相关条目），打开 Terminal 跑一次：
 > ```bash
 > xattr -dr com.apple.quarantine /Applications/Compactum.app
 > ```
