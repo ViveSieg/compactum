@@ -476,12 +476,13 @@ function showResult(result) {
   warnEl.hidden = !anyExceeded;
   if (anyExceeded) warnEl.textContent = t("cap_exceeded_msg");
 
-  if (result && result.outputs && result.outputs.length) {
-    $("resultPath").textContent = result.outputs.map((o, i) => formatStatLine(o, stats[i])).join("\n");
-    $("openFolderBtn").dataset.path = result.outputs[0];
-  } else {
-    $("resultPath").textContent = "—";
-  }
+  const outputs = (result && result.outputs) || [];
+  const list = $("resultList");
+  list.innerHTML = "";
+  outputs.forEach((path, i) => list.appendChild(buildResultItem(path, stats[i])));
+
+  if (outputs.length) $("openFolderBtn").dataset.path = outputs[0];
+
   fireConfetti();
   maybeShowFirstSuccessDonate();
 }
@@ -493,25 +494,43 @@ document.getElementById("errorClose").addEventListener("click", () => {
   document.getElementById("errorBox").hidden = true;
 });
 
-function formatStatLine(outputPath, stat) {
-  if (!stat) return outputPath;
-  const inSize = humanBytes(stat.input_size);
-  const outSize = humanBytes(stat.output_size);
-  const ratio = stat.input_size > 0
-    ? Math.round((1 - stat.output_size / stat.input_size) * 100)
-    : 0;
-  const ratioTxt = ratio > 0 ? ` (-${ratio}%)` : "";
+function basename(path) {
+  if (!path) return "";
+  const m = String(path).match(/[^/\\]+[/\\]?$/);
+  return m ? m[0].replace(/[/\\]$/, "") : String(path);
+}
 
-  let extra = "";
-  if (stat.mode === "pdf" && stat.effective_scale != null) {
-    const eff = Number(stat.effective_scale).toFixed(2);
-    const inp = Number(stat.input_scale).toFixed(2);
-    extra = `   ${t("eff_scale")}: ${inp}× → ${eff}×`;
-    if (stat.quality) extra += `   ${t("eff_quality")}: q=${stat.quality}`;
-  } else if (stat.mode === "jpg" && stat.page_count != null) {
-    extra = `   ${stat.page_count} ${t("pages")}`;
+function buildResultItem(outputPath, stat) {
+  const li = document.createElement("li");
+  li.className = "fr-result-item";
+
+  const name = document.createElement("div");
+  name.className = "fr-result-name";
+  name.textContent = basename(outputPath);
+  li.appendChild(name);
+
+  if (stat) {
+    const meta = document.createElement("div");
+    meta.className = "fr-result-meta";
+    const parts = [];
+    if (stat.input_size && stat.output_size) {
+      const inSize = humanBytes(stat.input_size);
+      const outSize = humanBytes(stat.output_size);
+      const ratio = stat.input_size > 0
+        ? Math.round((1 - stat.output_size / stat.input_size) * 100)
+        : 0;
+      parts.push(ratio > 0 ? `${inSize} → ${outSize} (-${ratio}%)` : `${inSize} → ${outSize}`);
+    }
+    if (stat.mode === "jpg" && stat.page_count != null) {
+      parts.push(`${stat.page_count} ${t("pages")}`);
+    } else if (stat.mode === "pdf" && stat.effective_scale != null) {
+      parts.push(`${t("eff_scale")} ${Number(stat.effective_scale).toFixed(2)}×`);
+      if (stat.quality) parts.push(`${t("eff_quality")} ${stat.quality}`);
+    }
+    meta.textContent = parts.join(" · ");
+    li.appendChild(meta);
   }
-  return `${outputPath}\n   ${inSize} → ${outSize}${ratioTxt}${extra}`;
+  return li;
 }
 
 /* ---------- success animations ---------- */

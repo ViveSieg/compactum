@@ -705,6 +705,40 @@ a:hover { color: var(--accent-hover); }
   margin-top: 12px;
 }
 
+/* Success result list (replaces the old monospace path dump) */
+.fr-result-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fr-result-item {
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.fr-result-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+.fr-result-meta {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.fr-alert-warning {
+  margin: 4px 0 8px;
+  font-size: 12px;
+  color: #663300;
+  line-height: 1.5;
+}
+
 /* ============ Progress bar ============ */
 
 .fr-progress-bar {
