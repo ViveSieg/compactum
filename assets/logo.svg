@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="CapsaPDF">
+  <!-- DSFR-aligned: sharp corners, Bleu France #000091, two elements only.
+       Vertical rectangle = scroll case. Inner notch = sealed lid. -->
+  <rect x="22" y="6" width="20" height="52" fill="#000091"/>
+  <rect x="22" y="18" width="20" height="2" fill="#ffffff"/>
+</svg>

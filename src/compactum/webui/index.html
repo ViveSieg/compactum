@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Compactum</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="fr-header">
+  <div class="fr-header-inner">
+    <div class="fr-brand">
+      <svg class="fr-brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="22" y="6" width="20" height="52" fill="#000091"/>
+        <rect x="22" y="18" width="20" height="2" fill="#ffffff"/>
+      </svg>
+      <div class="fr-brand-text">
+        <p class="fr-brand-name">Compactum</p>
+        <p class="fr-brand-tagline" data-i18n="brand_tagline">Offline · Free · Non-commercial</p>
+      </div>
+    </div>
+    <div class="fr-lang-toggle" id="langToggle" role="group" aria-label="Language">
+      <button type="button" class="fr-lang-btn is-active" data-lang="en">EN</button>
+      <button type="button" class="fr-lang-btn" data-lang="zh">中</button>
+    </div>
+  </div>
+</header>
+
+<main class="fr-main">
+
+  <section class="fr-workspace">
+
+    <!-- ===== Left column: drop / file list ===== -->
+    <div class="fr-pane fr-pane-left">
+      <div class="fr-pane-head">
+        <span class="fr-pane-num">1</span>
+        <span class="fr-pane-title" data-i18n="step2">Drop your file</span>
+      </div>
+
+      <div class="fr-drop" id="drop">
+        <div id="dropIdle" class="fr-drop-idle">
+          <svg class="fr-drop-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M30 4H12a3 3 0 0 0-3 3v34a3 3 0 0 0 3 3h24a3 3 0 0 0 3-3V13z"/>
+            <polyline points="30 4 30 13 39 13"/>
+            <path d="M24 21v14M18 29l6 6 6-6"/>
+          </svg>
+          <p class="fr-drop-title" data-i18n="drop_title">Drop a PDF or image here</p>
+          <p class="fr-drop-sub" data-i18n="drop_or">or</p>
+          <button type="button" class="fr-btn fr-btn-secondary" id="pickBtn" data-i18n="drop_browse">Browse files</button>
+          <p class="fr-drop-hint" data-i18n="drop_hint">PDF · JPG · PNG · WebP · BMP · TIFF · GIF · Stays on your computer</p>
+        </div>
+
+        <div id="dropActive" class="fr-drop-active" hidden>
+          <ul class="fr-file-list" id="fileList"></ul>
+          <button type="button" class="fr-btn-link" id="clearBtn" data-i18n="clear_files">Clear files</button>
+        </div>
+
+        <input type="file" id="filePicker" accept="application/pdf,.pdf,image/jpeg,.jpg,.jpeg,image/png,.png,image/webp,.webp,image/bmp,.bmp,image/tiff,.tif,.tiff,image/gif,.gif" hidden multiple />
+      </div>
+    </div>
+
+    <!-- ===== Right column: controls ===== -->
+    <aside class="fr-pane fr-pane-right">
+
+      <div class="fr-control-group" id="modeGroup">
+        <div class="fr-control-head">
+          <span class="fr-pane-num">2</span>
+          <span class="fr-pane-title" data-i18n="step1">PDF output type</span>
+          <span class="fr-control-aside" data-i18n="pdf_only">PDF only</span>
+        </div>
+        <div class="fr-radio-stack">
+          <label class="fr-radio">
+            <input type="radio" name="mode" value="jpg" checked />
+            <span class="fr-radio-mark"></span>
+            <span class="fr-radio-body">
+              <span class="fr-radio-title" data-i18n="mode_jpg_title">PDF → Images</span>
+              <span class="fr-radio-hint" data-i18n="mode_jpg_hint">One JPG per page. Each ≤ target size.</span>
+            </span>
+          </label>
+          <label class="fr-radio">
+            <input type="radio" name="mode" value="pdf" />
+            <span class="fr-radio-mark"></span>
+            <span class="fr-radio-body">
+              <span class="fr-radio-title" data-i18n="mode_pdf_title">PDF → Smaller PDF</span>
+              <span class="fr-radio-hint" data-i18n="mode_pdf_hint">Whole PDF rebuilt ≤ target size.</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="fr-control-group" id="sizeGroup">
+        <div class="fr-control-head">
+          <span class="fr-pane-num">3</span>
+          <span class="fr-pane-title" data-i18n="step3">Target size</span>
+        </div>
+        <div class="fr-presets" id="sizeChips">
+          <button type="button" class="fr-preset" data-kb="200">200&nbsp;KB</button>
+          <button type="button" class="fr-preset is-active" data-kb="500">500&nbsp;KB</button>
+          <button type="button" class="fr-preset" data-kb="1024">1&nbsp;MB</button>
+          <button type="button" class="fr-preset" data-kb="2048">2&nbsp;MB</button>
+          <button type="button" class="fr-preset" data-kb="5120">5&nbsp;MB</button>
+        </div>
+        <div class="fr-input-group">
+          <label for="customKb" class="fr-input-label" data-i18n="custom_label">Or enter a custom size (KB)</label>
+          <input type="number" id="customKb" class="fr-input" min="20" max="51200" step="10" data-i18n-placeholder="custom_placeholder" placeholder="e.g. 350" />
+        </div>
+        <label class="fr-checkbox" for="skipLimit">
+          <input type="checkbox" id="skipLimit" />
+          <span class="fr-checkbox-mark"></span>
+          <span class="fr-checkbox-body">
+            <span class="fr-checkbox-title" data-i18n="skip_title">Skip size limit (native quality)</span>
+            <span class="fr-checkbox-hint" data-i18n="skip_hint">Original quality, no size cap. Use when you only need to convert.</span>
+          </span>
+        </label>
+      </div>
+
+      <details class="fr-advanced">
+        <summary data-i18n="advanced">Advanced</summary>
+        <div class="fr-advanced-body">
+          <div class="fr-input-group">
+            <label class="fr-input-label" for="scaleRange" data-i18n="scale_label">Render scale (default 1.5×)</label>
+            <div class="fr-range-row">
+              <span class="fr-range-edge" data-i18n="scale_low">1× soft</span>
+              <input type="range" id="scaleRange" min="1" max="3" step="0.1" value="1.5" />
+              <span class="fr-range-edge" data-i18n="scale_high">3× sharp</span>
+            </div>
+            <div class="fr-range-foot">
+              <span class="fr-range-val" id="scaleVal">1.5×</span>
+              <button type="button" class="fr-btn-link" id="resetScale" data-i18n="reset">Reset</button>
+            </div>
+            <p class="fr-input-hint" data-i18n="scale_hint">Higher = sharper image, larger starting size before compression. The size limit is still hard-enforced regardless of this value.</p>
+          </div>
+        </div>
+      </details>
+
+    </aside>
+  </section>
+
+  <!-- ===== Action row ===== -->
+  <section class="fr-action-row">
+    <button type="button" class="fr-btn fr-btn-primary fr-btn-lg" id="runBtn" disabled data-i18n="btn_start">Start</button>
+    <p class="fr-actions-hint" data-i18n="actions_hint">Output is saved next to the original PDF.</p>
+  </section>
+
+  <!-- ===== Status row (progress / result / error) ===== -->
+  <section class="fr-status-row">
+    <div class="fr-alert fr-alert-info" id="progress" hidden>
+      <div class="fr-alert-body">
+        <p class="fr-alert-title" id="progressTitle" data-i18n="processing">Processing…</p>
+        <div class="fr-progress-bar"><div class="fr-progress-fill" id="progressFill"></div></div>
+        <p class="fr-alert-hint" id="progressText">—</p>
+      </div>
+    </div>
+    <div class="fr-alert fr-alert-success" id="result" hidden>
+      <div class="fr-alert-body">
+        <p class="fr-alert-title" data-i18n="done">Done</p>
+        <p class="fr-alert-hint" id="resultPath">—</p>
+        <div class="fr-alert-actions">
+          <button type="button" class="fr-btn fr-btn-tertiary" id="openFolderBtn" data-i18n="open_folder">Open output folder</button>
+          <button type="button" class="fr-btn-link" id="resetBtn" data-i18n="another">Process another</button>
+        </div>
+      </div>
+    </div>
+    <div class="fr-alert fr-alert-error" id="errorBox" hidden>
+      <div class="fr-alert-body">
+        <p class="fr-alert-title" data-i18n="error_title">Something went wrong</p>
+        <p class="fr-alert-hint" id="errorText">—</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="fr-footer">
+  <div class="fr-footer-inner">
+    <p class="fr-footer-desc" data-i18n="footer_desc">100% offline · Non-commercial use · Files never leave your machine</p>
+    <ul class="fr-footer-links">
+      <li><button type="button" class="fr-footer-link-btn" id="donateBtn" data-i18n="support_author">Support the author</button></li>
+      <li><a href="https://github.com/ViveSieg/compactum" id="githubLink" target="_blank">GitHub</a></li>
+      <li><a href="https://github.com/ViveSieg/compactum/issues" target="_blank" data-i18n="report_bug">Report a bug</a></li>
+    </ul>
+  </div>
+</footer>
+
+<div class="fr-modal" id="donateModal" hidden>
+  <div class="fr-modal-overlay" data-close="donate"></div>
+  <div class="fr-modal-card" role="dialog" aria-modal="true">
+    <div class="fr-modal-head">
+      <h2 class="fr-modal-title" data-i18n="donate_title">Buy me a coffee</h2>
+      <button type="button" class="fr-icon-btn" id="closeDonate" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="fr-modal-body">
+      <p class="fr-donate-intro" data-i18n="donate_intro">This tool is free for non-commercial use. If it saved you some pain, a small tip is appreciated — but never required.</p>
+      <div class="fr-donate-grid">
+        <figure class="fr-donate-card">
+          <img src="donate/alipay.jpg" alt="Alipay QR" />
+          <figcaption data-i18n="alipay">Alipay</figcaption>
+        </figure>
+        <figure class="fr-donate-card">
+          <img src="donate/wechat.jpg" alt="WeChat Pay QR" />
+          <figcaption data-i18n="wechat">WeChat Pay</figcaption>
+        </figure>
+      </div>
+      <p class="fr-donate-thanks" data-i18n="thanks">Thank you!</p>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

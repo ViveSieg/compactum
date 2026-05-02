@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "compactum"
+version = "1.0.0"
+description = "Force any PDF under a target size (default 500 KB). Cross-platform GUI + CLI."
+readme = "README.md"
+license = { text = "PolyForm-Noncommercial-1.0.0" }
+authors = [{ name = "ViveSieg" }]
+requires-python = ">=3.9"
+keywords = ["pdf", "compress", "shrink", "500kb", "jpg", "image", "gui", "cli"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Environment :: MacOS X",
+  "Environment :: Win32 (MS Windows)",
+  "Environment :: X11 Applications",
+  "Intended Audience :: End Users/Desktop",
+  "License :: Free for non-commercial use",
+  "License :: Other/Proprietary License",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Multimedia :: Graphics",
+  "Topic :: Office/Business",
+  "Topic :: Utilities",
+]
+dependencies = [
+  "Pillow>=9.0.0",
+  "pypdfium2>=4.20.0",
+  "pywebview>=4.4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/ViveSieg/compactum"
+Repository = "https://github.com/ViveSieg/compactum"
+Issues = "https://github.com/ViveSieg/compactum/issues"
+
+[project.scripts]
+compactum = "compactum.cli:gui_main"
+compactum-jpg = "compactum.cli:jpg_main"
+compactum-pdf = "compactum.cli:pdf_main"
+
+[project.gui-scripts]
+"Compactum" = "compactum.cli:gui_main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+compactum = [
+  "webui/*.html",
+  "webui/*.css",
+  "webui/*.js",
+  "webui/fonts/*.woff2",
+  "webui/donate/*.jpg",
+  "webui/donate/*.png",
+]
