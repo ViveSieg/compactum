@@ -71,20 +71,29 @@
           <span class="fr-pane-title" data-i18n="step1">Output type</span>
         </div>
         <div class="fr-radio-stack">
-          <label class="fr-radio" data-mode="jpg" title="One JPG per page. Each ≤ target size.">
+          <label class="fr-radio" data-mode="jpg">
             <input type="radio" name="mode" value="jpg" checked />
             <span class="fr-radio-mark"></span>
-            <span class="fr-radio-title" data-i18n="mode_jpg_title">PDF → Images</span>
+            <span class="fr-radio-body">
+              <span class="fr-radio-title" data-i18n="mode_jpg_title">PDF → Images</span>
+              <span class="fr-radio-hint" data-i18n="mode_jpg_hint">One JPG per page. Each ≤ target size.</span>
+            </span>
           </label>
-          <label class="fr-radio" data-mode="pdf" title="Whole PDF rebuilt ≤ target size.">
+          <label class="fr-radio" data-mode="pdf">
             <input type="radio" name="mode" value="pdf" />
             <span class="fr-radio-mark"></span>
-            <span class="fr-radio-title" data-i18n="mode_pdf_title">PDF → Smaller PDF</span>
+            <span class="fr-radio-body">
+              <span class="fr-radio-title" data-i18n="mode_pdf_title">PDF → Smaller PDF</span>
+              <span class="fr-radio-hint" data-i18n="mode_pdf_hint">Whole PDF rebuilt ≤ target size.</span>
+            </span>
           </label>
-          <label class="fr-radio" data-mode="image" title="Single image shrunk to target size.">
+          <label class="fr-radio" data-mode="image">
             <input type="radio" name="mode" value="image" />
             <span class="fr-radio-mark"></span>
-            <span class="fr-radio-title" data-i18n="mode_image_title">Image → Smaller JPG</span>
+            <span class="fr-radio-body">
+              <span class="fr-radio-title" data-i18n="mode_image_title">Image → Smaller JPG</span>
+              <span class="fr-radio-hint" data-i18n="mode_image_hint">Single image shrunk to target size.</span>
+            </span>
           </label>
         </div>
       </div>
@@ -105,10 +114,13 @@
           <label for="customKb" class="fr-input-label" data-i18n="custom_label">Or enter a custom size (KB)</label>
           <input type="number" id="customKb" class="fr-input" min="20" max="51200" step="10" data-i18n-placeholder="custom_placeholder" placeholder="e.g. 350" />
         </div>
-        <label class="fr-checkbox" for="skipLimit" title="Original quality, no size cap. Convert only.">
+        <label class="fr-checkbox" for="skipLimit">
           <input type="checkbox" id="skipLimit" />
           <span class="fr-checkbox-mark"></span>
-          <span class="fr-checkbox-title" data-i18n="skip_title">Skip size limit (native quality)</span>
+          <span class="fr-checkbox-body">
+            <span class="fr-checkbox-title" data-i18n="skip_title">Skip size limit (native quality)</span>
+            <span class="fr-checkbox-hint" data-i18n="skip_hint">Output at original render quality, no size cap.</span>
+          </span>
         </label>
 
         <details class="fr-advanced">
@@ -154,12 +166,22 @@
           <button type="button" class="fr-btn-link" id="resetBtn" data-i18n="another">Process another</button>
         </div>
       </div>
+      <button type="button" class="fr-alert-close" id="resultClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </div>
     <div class="fr-alert fr-alert-error" id="errorBox" hidden>
       <div class="fr-alert-body">
         <p class="fr-alert-title" data-i18n="error_title">Something went wrong</p>
         <p class="fr-alert-hint" id="errorText">—</p>
       </div>
+      <button type="button" class="fr-alert-close" id="errorClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </div>
   </section>
 

@@ -482,9 +482,16 @@ function showResult(result) {
   } else {
     $("resultPath").textContent = "—";
   }
-  if (!anyExceeded) fireConfetti();
+  fireConfetti();
   maybeShowFirstSuccessDonate();
 }
+
+document.getElementById("resultClose").addEventListener("click", () => {
+  document.getElementById("result").hidden = true;
+});
+document.getElementById("errorClose").addEventListener("click", () => {
+  document.getElementById("errorBox").hidden = true;
+});
 
 function formatStatLine(outputPath, stat) {
   if (!stat) return outputPath;

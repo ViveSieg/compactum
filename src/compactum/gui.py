@@ -74,18 +74,18 @@ class Api:
     def saveDroppedContent(self, items: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Fallback for backends (notably macOS WKWebView) that don't expose
         a file path on drag-drop. The frontend reads each file as base64 and
-        sends {name, b64}; we write it to a per-session temp dir and return
-        regular file descriptors."""
-        import base64, tempfile
-        if not hasattr(self, "_drop_dir") or self._drop_dir is None:
-            self._drop_dir = Path(tempfile.mkdtemp(prefix="compactum-drop-"))
+        sends {name, b64}; we write it to ~/Downloads/Compactum/ so the user
+        can see both the input copy and its output afterward."""
+        import base64
+        drop_dir = Path.home() / "Downloads" / "Compactum"
+        drop_dir.mkdir(parents=True, exist_ok=True)
         out: list[dict[str, Any]] = []
         for it in items:
             name = (it.get("name") or "file").replace("/", "_").replace("\\", "_")
             b64 = it.get("b64") or ""
             if not b64:
                 continue
-            target = self._drop_dir / name
+            target = drop_dir / name
             try:
                 target.write_bytes(base64.b64decode(b64))
             except Exception:
@@ -242,9 +242,9 @@ def launch() -> int:
         title=f"Compactum v{__version__}",
         url=index_path.as_uri(),
         js_api=api,
-        width=900,
-        height=680,
-        min_size=(760, 580),
+        width=940,
+        height=740,
+        min_size=(800, 620),
         resizable=True,
     )
     api.attach(window)

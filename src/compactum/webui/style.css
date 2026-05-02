@@ -182,28 +182,19 @@ a:hover { color: var(--accent-hover); }
 
 /* ============ Main / 2-pane workspace ============ */
 
-html, body { height: 100%; }
-body { display: flex; flex-direction: column; min-height: 100vh; }
-
 .fr-main {
-  flex: 1;
   max-width: 1080px;
   width: 100%;
   margin: 0 auto;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+  padding: 16px 20px 20px;
 }
 
 .fr-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
-  gap: 12px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+  gap: 14px;
   align-items: stretch;
-  flex: 1;
-  min-height: 0;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .fr-pane {
@@ -212,9 +203,8 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
   display: flex;
   flex-direction: column;
   box-shadow: 0 1px 0 rgba(22, 22, 22, 0.04);
-  min-height: 0;
 }
-.fr-pane-left { min-height: 240px; }
+.fr-pane-left { min-height: 320px; }
 .fr-pane-right { padding: 0; }
 
 .fr-pane-head {
@@ -287,9 +277,9 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 }
 .fr-radio {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 12px;
   border: 1px solid var(--border);
   background: var(--surface);
   cursor: pointer;
@@ -299,11 +289,12 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .fr-radio input { position: absolute; opacity: 0; pointer-events: none; }
 .fr-radio-mark {
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border: 2px solid var(--bf-grey-500);
   border-radius: 50%;
   flex-shrink: 0;
+  margin-top: 1px;
   position: relative;
   background: var(--surface);
 }
@@ -563,9 +554,9 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 
 .fr-checkbox {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 12px;
   border: 1px solid var(--border);
   background: var(--surface);
   cursor: pointer;
@@ -575,10 +566,11 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .fr-checkbox input { position: absolute; opacity: 0; pointer-events: none; }
 .fr-checkbox-mark {
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border: 2px solid var(--bf-grey-500);
   flex-shrink: 0;
+  margin-top: 1px;
   position: relative;
   background: var(--surface);
 }
@@ -661,12 +653,29 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 /* ============ Alerts (thick left border) ============ */
 
 .fr-alert {
+  position: relative;
   display: flex;
   gap: 12px;
-  padding: 14px 16px 14px 14px;
+  padding: 14px 44px 14px 14px;
   background: var(--surface);
   border-left: 4px solid var(--accent);
 }
+.fr-alert-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 0;
+  color: var(--text-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.fr-alert-close:hover { background: rgba(0, 0, 0, 0.06); color: var(--text); }
 .fr-alert-info { border-left-color: var(--accent); background: var(--accent-soft); }
 .fr-alert-success { border-left-color: var(--bf-green); background: var(--bf-green-soft); }
 .fr-alert-warning { border-left-color: #b34000; background: #fff4d4; }
@@ -680,10 +689,13 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 }
 .fr-alert-hint {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-2);
   word-break: break-all;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  max-width: 100%;
 }
 .fr-alert-actions {
   display: flex;
