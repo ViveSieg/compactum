@@ -1,5 +1,7 @@
 /* Compactum — frontend
- * Talks to Python backend via window.pywebview.api.{pickFiles,run,openFolder,openExternal,resolveDropped}
+ * Talks to Python backend via window.pywebview.api.{pickFiles,run,openFolder,openExternal}.
+ * The Python side wires a native DOM drop handler on #drop and pushes
+ * descriptors back into window.onNativeFileDrop.
  */
 
 (() => {
@@ -280,59 +282,19 @@ drop.addEventListener("dragover", (e) => {
 drop.addEventListener("dragleave", (e) => {
   if (e.target === drop) drop.classList.remove("is-dragging");
 });
-drop.addEventListener("drop", async (e) => {
+// pywebview's Python-side DOM drop handler captures real OS paths via
+// the platform backend and calls window.onNativeFileDrop with file
+// descriptors. Define the JS receiver here.
+window.onNativeFileDrop = function (items) {
+  if (Array.isArray(items) && items.length) addFiles(items);
+};
+
+drop.addEventListener("drop", (e) => {
+  // Stop the browser from navigating to file://… on a missed drop. The
+  // pywebview-side DOM listener is what actually captures the paths.
   e.preventDefault();
   drop.classList.remove("is-dragging");
-
-  const files = Array.from(e.dataTransfer.files || []);
-  if (files.length === 0) return;
-
-  // Layer 1 — Chromium-based webviews (Win EdgeChromium, some Linux
-  // GTK builds) expose f.path directly. Use the real OS path; output
-  // lands next to the original file.
-  const paths = files.filter((f) => f.path).map((f) => f.path);
-  if (paths.length === files.length && paths.length > 0) {
-    try {
-      const resolved = await api().resolveDropped(paths);
-      if (resolved && resolved.length) addFiles(resolved);
-    } catch (err) { showError(String(err.message || err)); }
-    return;
-  }
-
-  // Layer 2 — macOS WKWebView and any backend that strips f.path. Read
-  // bytes via FileReader, then the backend asks once where to save (a
-  // native folder picker), and the user-chosen folder becomes the
-  // working directory for both inputs and outputs of this session.
-  try {
-    const items = await Promise.all(files.map(async (f) => ({
-      name: f.name,
-      b64: await readAsBase64(f),
-    })));
-    const res = await api().saveDroppedToFolder(items);
-    if (res && Array.isArray(res.files) && res.files.length) {
-      addFiles(res.files);
-    } else if (res && res.cancelled) {
-      // user dismissed the folder picker — quietly ignore
-    } else {
-      showError(t("drop_unsupported"));
-    }
-  } catch (err) {
-    showError(String(err.message || err));
-  }
 });
-
-function readAsBase64(file) {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => {
-      const v = r.result || "";
-      const c = v.indexOf(",");
-      resolve(c >= 0 ? v.slice(c + 1) : v);
-    };
-    r.onerror = () => reject(r.error);
-    r.readAsDataURL(file);
-  });
-}
 
 function addFiles(picked) {
   const known = new Set(state.files.map((f) => f.path));

@@ -42,53 +42,48 @@ class Api:
 
     def attach(self, window: "webview.Window") -> None:
         self._window = window
-        self._drop_save_dir: Path | None = None
+        # pywebview 6.x exposes real OS file paths via the DOM 'drop' event:
+        # subscribe to drop on the #drop element after the page loads, then
+        # each dropped file gets a `pywebviewFullPath` field with the real
+        # NSURL/Win/GTK path. Works on all four backends.
+        try:
+            window.events.loaded += self._wire_native_dom_drop
+        except Exception as e:
+            print(f"[compactum] cannot subscribe to loaded event: {e}", flush=True)
 
-    def saveDroppedToFolder(self, items: list[dict[str, Any]]) -> dict[str, Any]:
-        """Mature cross-platform drag-drop: WKWebView strips file paths,
-        so we read the bytes in JS, ask the user once where to save them
-        via the native folder picker, and write copies there. Subsequent
-        processing outputs land in the same user-chosen folder, so the
-        'output next to source' contract holds — the source is wherever
-        the user just told us to put it.
-        """
-        import base64
-        if not items or self._window is None:
-            return {"files": [], "cancelled": False}
-
-        if self._drop_save_dir is None or not self._drop_save_dir.exists():
-            default = str(Path.home() / "Documents")
-            chosen = self._window.create_file_dialog(
-                webview.FOLDER_DIALOG,
-                directory=default,
+    def _wire_native_dom_drop(self) -> None:
+        try:
+            from webview.dom import DOMEventHandler  # type: ignore
+            drop_el = self._window.dom.get_element("#drop") if self._window else None
+            if drop_el is None:
+                print("[compactum] #drop element not found at load time", flush=True)
+                return
+            drop_el.events.drop += DOMEventHandler(
+                self._on_dom_drop, prevent_default=True, stop_propagation=True
             )
-            if not chosen:
-                return {"files": [], "cancelled": True}
-            self._drop_save_dir = Path(chosen[0])
+            print("[compactum] DOM drop handler wired", flush=True)
+        except Exception as e:
+            print(f"[compactum] DOM drop wiring failed: {e}", flush=True)
 
-        target_dir = self._drop_save_dir
-        out: list[dict[str, Any]] = []
-        for it in items:
-            raw_name = (it.get("name") or "file").replace("/", "_").replace("\\", "_")
-            b64 = it.get("b64") or ""
-            if not b64:
-                continue
-            target = target_dir / raw_name
-            stem, ext = target.stem, target.suffix
-            i = 1
-            while target.exists() and i < 100:
-                target = target_dir / f"{stem} ({i}){ext}"
-                i += 1
-            try:
-                target.write_bytes(base64.b64decode(b64))
-            except Exception:
-                continue
-            if self._is_supported(target):
-                out.append(self._describe(target))
-        return {"files": out, "cancelled": False}
-
-    def resetDropFolder(self) -> None:
-        self._drop_save_dir = None
+    def _on_dom_drop(self, event) -> None:
+        try:
+            data_transfer = (event or {}).get("dataTransfer") or {}
+            files = data_transfer.get("files") or []
+            descriptors: list[dict[str, Any]] = []
+            for f in files:
+                full = f.get("pywebviewFullPath") if isinstance(f, dict) else None
+                if not full:
+                    continue
+                path = Path(full)
+                if path.exists() and self._is_supported(path):
+                    descriptors.append(self._describe(path))
+            if descriptors and self._window is not None:
+                self._window.evaluate_js(
+                    f"window.onNativeFileDrop({json.dumps(descriptors)})"
+                )
+                print(f"[compactum] delivered {len(descriptors)} dropped path(s)", flush=True)
+        except Exception as e:
+            print(f"[compactum] _on_dom_drop error: {e}", flush=True)
 
     # --------- file selection ---------
 
@@ -108,15 +103,6 @@ class Api:
         if not result:
             return []
         return [self._describe(Path(p)) for p in result if self._is_supported(Path(p))]
-
-    def resolveDropped(self, paths: list[str]) -> list[dict[str, Any]]:
-        out: list[dict[str, Any]] = []
-        for p in paths:
-            path = Path(p)
-            if not path.exists() or not self._is_supported(path):
-                continue
-            out.append(self._describe(path))
-        return out
 
     @staticmethod
     def _is_supported(path: Path) -> bool:
@@ -233,19 +219,51 @@ class Api:
     # --------- open output ---------
 
     def openFolder(self, path_str: str) -> None:
+        """Reveal the output in the OS file manager — never auto-open the
+        file's contents. Each platform uses its native 'select & reveal'
+        command, falling back to the parent directory if needed.
+        """
         path = Path(path_str)
-        target = path if path.is_dir() else path.parent
+        if not path.exists():
+            return
         system = platform.system()
         try:
             if system == "Darwin":
-                subprocess.run(["open", str(target)], check=False)
+                # 'open -R' reveals path in its parent Finder window
+                subprocess.run(["open", "-R", str(path)], check=False)
             elif system == "Windows":
-                if path.is_file():
-                    subprocess.run(["explorer", "/select,", str(path)], check=False)
-                else:
-                    os.startfile(str(target))  # type: ignore[attr-defined]
+                # 'explorer /select,<path>' highlights path in its parent
+                # Explorer window. Works for both files and folders.
+                subprocess.run(["explorer", f"/select,{path}"], check=False)
             else:
-                subprocess.run(["xdg-open", str(target)], check=False)
+                # Linux: try DBus FileManager1 (works on most modern DEs);
+                # then DE-specific --select fallbacks; finally xdg-open the
+                # parent directory.
+                parent = path if path.is_dir() else path.parent
+                attempts = (
+                    ["dbus-send", "--session",
+                     "--dest=org.freedesktop.FileManager1",
+                     "--type=method_call",
+                     "/org/freedesktop/FileManager1",
+                     "org.freedesktop.FileManager1.ShowItems",
+                     f"array:string:file://{path}", "string:"],
+                    ["nautilus", "--select", str(path)],
+                    ["dolphin", "--select", str(path)],
+                    ["nemo", str(path)],
+                )
+                ok = False
+                for cmd in attempts:
+                    try:
+                        r = subprocess.run(cmd, check=False,
+                                           stdout=subprocess.DEVNULL,
+                                           stderr=subprocess.DEVNULL)
+                        if r.returncode == 0:
+                            ok = True
+                            break
+                    except FileNotFoundError:
+                        continue
+                if not ok:
+                    subprocess.run(["xdg-open", str(parent)], check=False)
         except Exception:
             pass
 
