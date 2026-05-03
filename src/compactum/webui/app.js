@@ -24,7 +24,7 @@ const I18N = {
     mode_jpg_short: "PDF → JPG",
     mode_pdf_short: "PDF → PDF",
     mode_image_short: "IMG → JPG",
-    drop_unsupported: "Drag-drop couldn't read the file path. Please use Browse files instead.",
+    drop_unsupported: "Couldn't accept the dropped files. Please use Browse files instead.",
     drop_title: "📥 Drop a PDF or image here",
     drop_title_pdf: "📥 Drop a PDF here",
     drop_title_image: "📥 Drop an image here",
@@ -82,7 +82,7 @@ const I18N = {
     mode_jpg_short: "PDF → JPG",
     mode_pdf_short: "PDF → PDF",
     mode_image_short: "图片 → JPG",
-    drop_unsupported: "拖放拿不到文件路径，请用「浏览文件」。",
+    drop_unsupported: "无法接受拖入的文件，请用「浏览文件」。",
     drop_title: "📥 拖入 PDF 或图片",
     drop_title_pdf: "📥 把 PDF 拖到这里",
     drop_title_image: "📥 把图片拖到这里",
@@ -278,13 +278,6 @@ drop.addEventListener("dragover", (e) => {
 drop.addEventListener("dragleave", (e) => {
   if (e.target === drop) drop.classList.remove("is-dragging");
 });
-// Native drop handler (pywebview pushes paths via this when available).
-let _nativeDropAcked = false;
-window.onNativeFileDrop = function (items) {
-  _nativeDropAcked = true;
-  if (Array.isArray(items) && items.length) addFiles(items);
-};
-
 drop.addEventListener("drop", async (e) => {
   e.preventDefault();
   drop.classList.remove("is-dragging");
@@ -292,7 +285,9 @@ drop.addEventListener("drop", async (e) => {
   const files = Array.from(e.dataTransfer.files || []);
   if (files.length === 0) return;
 
-  // Path 1: f.path is exposed (Chromium-based webviews) — use the real path.
+  // Layer 1 — Chromium-based webviews (Win EdgeChromium, some Linux
+  // GTK builds) expose f.path directly. Use the real OS path; output
+  // lands next to the original file.
   const paths = files.filter((f) => f.path).map((f) => f.path);
   if (paths.length === files.length && paths.length > 0) {
     try {
@@ -302,17 +297,40 @@ drop.addEventListener("drop", async (e) => {
     return;
   }
 
-  // Path 2: macOS WKWebView strips f.path — wait for pywebview's native
-  // files_dropped event, which delivers real OS paths via onNativeFileDrop.
-  _nativeDropAcked = false;
-  await new Promise((r) => setTimeout(r, 350));
-  if (_nativeDropAcked) return;
-
-  // Native event didn't fire — be honest about it instead of silently
-  // writing to a guessed folder. Pointing the user at Browse files keeps
-  // the output next to the original file on every platform.
-  showError(t("drop_unsupported"));
+  // Layer 2 — macOS WKWebView and any backend that strips f.path. Read
+  // bytes via FileReader, then the backend asks once where to save (a
+  // native folder picker), and the user-chosen folder becomes the
+  // working directory for both inputs and outputs of this session.
+  try {
+    const items = await Promise.all(files.map(async (f) => ({
+      name: f.name,
+      b64: await readAsBase64(f),
+    })));
+    const res = await api().saveDroppedToFolder(items);
+    if (res && Array.isArray(res.files) && res.files.length) {
+      addFiles(res.files);
+    } else if (res && res.cancelled) {
+      // user dismissed the folder picker — quietly ignore
+    } else {
+      showError(t("drop_unsupported"));
+    }
+  } catch (err) {
+    showError(String(err.message || err));
+  }
 });
+
+function readAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => {
+      const v = r.result || "";
+      const c = v.indexOf(",");
+      resolve(c >= 0 ? v.slice(c + 1) : v);
+    };
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(file);
+  });
+}
 
 function addFiles(picked) {
   const known = new Set(state.files.map((f) => f.path));
@@ -572,15 +590,14 @@ function fireConfetti() {
   setTimeout(() => layer.remove(), 2400);
 }
 
-const DONATE_SHOWN_KEY = "compactum.firstSuccessShown";
+const DONATE_COUNT_KEY = "compactum.successCount";
+const DONATE_MILESTONES = new Set([1, 10, 20]);
 function maybeShowFirstSuccessDonate() {
-  let shown = null;
-  try { shown = localStorage.getItem(DONATE_SHOWN_KEY); } catch {}
-  if (shown) return;
-  setTimeout(() => {
-    openDonate();
-    try { localStorage.setItem(DONATE_SHOWN_KEY, "1"); } catch {}
-  }, 900);
+  let n = 0;
+  try { n = parseInt(localStorage.getItem(DONATE_COUNT_KEY) || "0", 10) || 0; } catch {}
+  n += 1;
+  try { localStorage.setItem(DONATE_COUNT_KEY, String(n)); } catch {}
+  if (DONATE_MILESTONES.has(n)) setTimeout(openDonate, 900);
 }
 
 function showError(msg) {

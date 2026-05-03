@@ -42,95 +42,53 @@ class Api:
 
     def attach(self, window: "webview.Window") -> None:
         self._window = window
-        try:
-            print(f"[compactum] pywebview {webview.__version__}", flush=True)
-        except Exception:
-            pass
+        self._drop_save_dir: Path | None = None
 
-        # Layer 1 — pywebview's native files_dropped event (works when
-        # supported by the backend; sig varies slightly by version).
-        try:
-            window.events.files_dropped += self._on_files_dropped  # type: ignore[attr-defined]
-            print("[compactum] subscribed to events.files_dropped", flush=True)
-        except Exception as e:
-            print(f"[compactum] files_dropped subscribe failed: {e}", flush=True)
+    def saveDroppedToFolder(self, items: list[dict[str, Any]]) -> dict[str, Any]:
+        """Mature cross-platform drag-drop: WKWebView strips file paths,
+        so we read the bytes in JS, ask the user once where to save them
+        via the native folder picker, and write copies there. Subsequent
+        processing outputs land in the same user-chosen folder, so the
+        'output next to source' contract holds — the source is wherever
+        the user just told us to put it.
+        """
+        import base64
+        if not items or self._window is None:
+            return {"files": [], "cancelled": False}
 
-        # Layer 2 — macOS pyobjc fallback. We swizzle the WKWebView's
-        # performDragOperation_ so we receive raw NSURL paths from the
-        # NSPasteboard before WKWebView strips them.
-        if sys.platform == "darwin":
-            self._install_macos_native_drop()
-
-    def _on_files_dropped(self, *args) -> None:
-        try:
-            files = args[-1] if args else []
-            print(f"[compactum] files_dropped fired with {len(files)} item(s)", flush=True)
-            self._deliver_paths_to_js([
-                getattr(f, "path", None) if not isinstance(f, str) else f
-                for f in files
-            ])
-        except Exception as e:
-            print(f"[compactum] _on_files_dropped error: {e}", flush=True)
-
-    def _install_macos_native_drop(self) -> None:
-        try:
-            from webview.platforms.cocoa import BrowserView  # type: ignore
-            import objc  # type: ignore
-            from AppKit import NSURL, NSPasteboardURLReadingFileURLsOnlyKey  # type: ignore
-        except Exception as e:
-            print(f"[compactum] pyobjc fallback unavailable: {e}", flush=True)
-            return
-
-        api_self = self
-        original_imp = None
-        try:
-            original_imp = BrowserView.instanceMethodForSelector_("performDragOperation:")
-        except Exception:
-            pass
-
-        def patched_perform(view_self, sender):
-            try:
-                pboard = sender.draggingPasteboard()
-                opts = {NSPasteboardURLReadingFileURLsOnlyKey: True}
-                urls = pboard.readObjectsForClasses_options_([NSURL.class_()], opts) or []
-                paths = [str(u.path()) for u in urls if u.path()]
-                if paths:
-                    api_self._deliver_paths_to_js(paths)
-                    return True
-            except Exception as e:
-                print(f"[compactum] native drop handler error: {e}", flush=True)
-            if original_imp is not None:
-                try:
-                    return original_imp(view_self, sender)
-                except Exception:
-                    pass
-            return False
-
-        try:
-            objc.classAddMethods(
-                BrowserView,
-                [objc.selector(patched_perform, selector=b"performDragOperation:")],
+        if self._drop_save_dir is None or not self._drop_save_dir.exists():
+            default = str(Path.home() / "Documents")
+            chosen = self._window.create_file_dialog(
+                webview.FOLDER_DIALOG,
+                directory=default,
             )
-            print("[compactum] pyobjc native drop handler installed", flush=True)
-        except Exception as e:
-            print(f"[compactum] pyobjc install failed: {e}", flush=True)
+            if not chosen:
+                return {"files": [], "cancelled": True}
+            self._drop_save_dir = Path(chosen[0])
 
-    def _deliver_paths_to_js(self, paths) -> None:
-        descriptors: list[dict[str, Any]] = []
-        for p in paths:
-            if not p:
+        target_dir = self._drop_save_dir
+        out: list[dict[str, Any]] = []
+        for it in items:
+            raw_name = (it.get("name") or "file").replace("/", "_").replace("\\", "_")
+            b64 = it.get("b64") or ""
+            if not b64:
                 continue
-            path = Path(str(p))
-            if path.exists() and self._is_supported(path):
-                descriptors.append(self._describe(path))
-        if descriptors and self._window is not None:
+            target = target_dir / raw_name
+            stem, ext = target.stem, target.suffix
+            i = 1
+            while target.exists() and i < 100:
+                target = target_dir / f"{stem} ({i}){ext}"
+                i += 1
             try:
-                self._window.evaluate_js(
-                    f"window.onNativeFileDrop({json.dumps(descriptors)})"
-                )
-                print(f"[compactum] delivered {len(descriptors)} path(s) to JS", flush=True)
-            except Exception as e:
-                print(f"[compactum] evaluate_js failed: {e}", flush=True)
+                target.write_bytes(base64.b64decode(b64))
+            except Exception:
+                continue
+            if self._is_supported(target):
+                out.append(self._describe(target))
+        return {"files": out, "cancelled": False}
+
+    def resetDropFolder(self) -> None:
+        self._drop_save_dir = None
 
     # --------- file selection ---------
 
