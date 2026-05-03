@@ -62,6 +62,7 @@ const I18N = {
     report_bug: "Report a bug",
     donate_title: "Buy me a coffee ☕",
     donate_intro: "Free for non-commercial use. Tips appreciated, never required.",
+    donate_count: "You've used Compactum {n} time(s). Thanks for trying it out.",
     alipay: "Alipay",
     wechat: "WeChat Pay",
     wise: "Wise (intl.)",
@@ -120,6 +121,7 @@ const I18N = {
     report_bug: "反馈问题",
     donate_title: "请作者喝杯咖啡 ☕",
     donate_intro: "非商用免费。打赏完全自愿，不强制。",
+    donate_count: "你已经用了 {n} 次。感谢支持。",
     alipay: "支付宝",
     wechat: "微信支付",
     wise: "Wise（境外）",
@@ -591,13 +593,21 @@ function fireConfetti() {
 }
 
 const DONATE_COUNT_KEY = "compactum.successCount";
-const DONATE_MILESTONES = new Set([1, 10, 20]);
+function getSuccessCount() {
+  try { return parseInt(localStorage.getItem(DONATE_COUNT_KEY) || "0", 10) || 0; }
+  catch { return 0; }
+}
+function isDonateMilestone(n) {
+  // 1, 8, 16, 32, 64, 128, … — first run, then start doubling from 8
+  if (n === 1) return true;
+  if (n < 8) return false;
+  // Power of two ≥ 8?
+  return (n & (n - 1)) === 0;
+}
 function maybeShowFirstSuccessDonate() {
-  let n = 0;
-  try { n = parseInt(localStorage.getItem(DONATE_COUNT_KEY) || "0", 10) || 0; } catch {}
-  n += 1;
+  const n = getSuccessCount() + 1;
   try { localStorage.setItem(DONATE_COUNT_KEY, String(n)); } catch {}
-  if (DONATE_MILESTONES.has(n)) setTimeout(openDonate, 900);
+  if (isDonateMilestone(n)) setTimeout(openDonate, 900);
 }
 
 function showError(msg) {
@@ -621,7 +631,12 @@ $("resetBtn").addEventListener("click", () => {
 /* ---------- donate modal ---------- */
 
 const donateModal = $("donateModal");
-function openDonate() { donateModal.hidden = false; }
+function openDonate() {
+  const n = getSuccessCount();
+  const el = $("donateCount");
+  if (el) el.textContent = n > 0 ? t("donate_count").replace("{n}", String(n)) : "";
+  donateModal.hidden = false;
+}
 function closeDonate() { donateModal.hidden = true; }
 $("donateBtn").addEventListener("click", openDonate);
 $("closeDonate").addEventListener("click", closeDonate);
