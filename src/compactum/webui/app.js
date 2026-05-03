@@ -360,8 +360,13 @@ function applyAdvancedVisibility() {
 
 function applyModeAvailability() {
   const sel = ".fr-seg-mode[data-mode], .fr-radio[data-mode]";
+  const setEnabled = (el, enabled) => {
+    el.classList.toggle("is-disabled", !enabled);
+    const input = el.querySelector("input");
+    if (input) input.disabled = !enabled;
+  };
   if (state.files.length === 0) {
-    document.querySelectorAll(sel).forEach((el) => el.classList.remove("is-disabled"));
+    document.querySelectorAll(sel).forEach((el) => setEnabled(el, true));
     return;
   }
   const allImages = state.files.every((f) => IMAGE_EXT.test(f.name));
@@ -369,9 +374,7 @@ function applyModeAvailability() {
   document.querySelectorAll(sel).forEach((el) => {
     const m = el.dataset.mode;
     const ok = (m === "image" && allImages) || (m !== "image" && allPdfs) || (!allImages && !allPdfs);
-    el.classList.toggle("is-disabled", !ok);
-    const input = el.querySelector("input");
-    if (input) input.disabled = !ok;
+    setEnabled(el, ok);
   });
 }
 
@@ -588,18 +591,42 @@ $("resetBtn").addEventListener("click", () => {
   $("result").hidden = true;
   $("errorBox").hidden = true;
   renderFiles();
+  applyModeAvailability();
 });
 
 /* ---------- donate modal ---------- */
 
 const donateModal = $("donateModal");
+const PAY_DEFAULT_BY_LANG = { en: "wise", zh: "alipay" };
+const PAY_QR = {
+  wise:   { src: "donate/wise.jpg",   labelKey: "wise" },
+  alipay: { src: "donate/alipay.jpg", labelKey: "alipay" },
+  wechat: { src: "donate/wechat.jpg", labelKey: "wechat" },
+};
+
+function setDonateMethod(method) {
+  const def = PAY_QR[method] || PAY_QR.wise;
+  const img = document.getElementById("donateQR");
+  const label = document.getElementById("donateQRLabel");
+  if (img) img.src = def.src;
+  if (label) label.textContent = t(def.labelKey);
+  document.querySelectorAll(".fr-donate-tab").forEach((b) => {
+    b.classList.toggle("is-active", b.dataset.pay === method);
+  });
+}
+
 function openDonate() {
   const n = getSuccessCount();
   const el = $("donateCount");
   if (el) el.textContent = n > 0 ? t("donate_count").replace("{n}", String(n)) : "";
+  setDonateMethod(PAY_DEFAULT_BY_LANG[state.lang] || "wise");
   donateModal.hidden = false;
 }
 function closeDonate() { donateModal.hidden = true; }
+
+document.querySelectorAll(".fr-donate-tab").forEach((b) => {
+  b.addEventListener("click", () => setDonateMethod(b.dataset.pay));
+});
 $("donateBtn").addEventListener("click", openDonate);
 $("closeDonate").addEventListener("click", closeDonate);
 donateModal.querySelector('[data-close="donate"]').addEventListener("click", closeDonate);

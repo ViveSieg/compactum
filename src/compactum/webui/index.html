@@ -200,20 +200,18 @@
     <div class="fr-modal-body">
       <p class="fr-donate-intro" data-i18n="donate_intro">This tool is free for non-commercial use. If it saved you some pain, a small tip is appreciated — but never required.</p>
       <p class="fr-donate-count" id="donateCount"></p>
-      <div class="fr-donate-grid">
-        <figure class="fr-donate-card">
-          <img src="donate/alipay.jpg" alt="Alipay QR" />
-          <figcaption data-i18n="alipay">Alipay</figcaption>
-        </figure>
-        <figure class="fr-donate-card">
-          <img src="donate/wechat.jpg" alt="WeChat Pay QR" />
-          <figcaption data-i18n="wechat">WeChat Pay</figcaption>
-        </figure>
-        <figure class="fr-donate-card">
-          <img src="donate/wise.jpg" alt="Wise QR" />
-          <figcaption data-i18n="wise">Wise (intl.)</figcaption>
-        </figure>
+
+      <div class="fr-donate-tabs" id="donateTabs" role="tablist">
+        <button class="fr-donate-tab" data-pay="wise" type="button">Wise</button>
+        <button class="fr-donate-tab" data-pay="alipay" type="button" data-i18n="alipay">Alipay</button>
+        <button class="fr-donate-tab" data-pay="wechat" type="button" data-i18n="wechat">WeChat Pay</button>
       </div>
+
+      <figure class="fr-donate-show" id="donateShow">
+        <img id="donateQR" src="donate/wise.jpg" alt="QR" />
+        <figcaption id="donateQRLabel">Wise</figcaption>
+      </figure>
+
       <p class="fr-donate-thanks" data-i18n="thanks">Thank you!</p>
     </div>
   </div>

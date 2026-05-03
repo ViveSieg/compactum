@@ -852,32 +852,52 @@ a:hover { color: var(--accent-hover); }
   color: var(--text-2);
   line-height: 1.6;
 }
-.fr-donate-grid {
+.fr-donate-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin: 12px 0;
 }
-.fr-donate-card {
+.fr-donate-tab {
+  background: transparent;
+  border: 0;
+  padding: 9px 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.fr-donate-tab + .fr-donate-tab { border-left: 1px solid var(--border); }
+.fr-donate-tab:hover { color: var(--accent); }
+.fr-donate-tab.is-active {
+  background: var(--accent);
+  color: var(--bf-white);
+}
+
+.fr-donate-show {
   margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 10px;
+  gap: 10px;
+  padding: 16px;
   background: var(--bf-grey-50);
   border: 1px solid var(--border);
 }
-.fr-donate-card img {
-  width: 100%;
-  max-width: 160px;
-  height: auto;
-  display: block;
+.fr-donate-show img {
+  width: 240px;
+  height: 240px;
+  object-fit: contain;
   background: var(--bf-white);
+  border: 1px solid var(--border);
 }
-.fr-donate-card figcaption {
+.fr-donate-show figcaption {
   font-size: 13px;
-  font-weight: 500;
-  color: var(--text-2);
+  font-weight: 600;
+  color: var(--text);
 }
 .fr-donate-thanks {
   margin: 16px 0 0 0;
@@ -893,8 +913,8 @@ a:hover { color: var(--accent-hover); }
   font-variant-numeric: tabular-nums;
 }
 .fr-donate-count:empty { display: none; }
-@media (max-width: 560px) {
-  .fr-donate-grid { grid-template-columns: 1fr; }
+@media (max-width: 480px) {
+  .fr-donate-show img { width: 200px; height: 200px; }
 }
 
 /* ============ Modal ============ */
