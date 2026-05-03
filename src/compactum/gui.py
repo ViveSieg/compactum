@@ -42,32 +42,95 @@ class Api:
 
     def attach(self, window: "webview.Window") -> None:
         self._window = window
-        # pywebview 5.x exposes a native drag-drop event on all three
-        # platforms (Cocoa / EdgeWebView2 / GTK), giving real OS paths.
         try:
-            window.events.files_dropped += self._on_files_dropped  # type: ignore[attr-defined]
+            print(f"[compactum] pywebview {webview.__version__}", flush=True)
         except Exception:
             pass
 
+        # Layer 1 — pywebview's native files_dropped event (works when
+        # supported by the backend; sig varies slightly by version).
+        try:
+            window.events.files_dropped += self._on_files_dropped  # type: ignore[attr-defined]
+            print("[compactum] subscribed to events.files_dropped", flush=True)
+        except Exception as e:
+            print(f"[compactum] files_dropped subscribe failed: {e}", flush=True)
+
+        # Layer 2 — macOS pyobjc fallback. We swizzle the WKWebView's
+        # performDragOperation_ so we receive raw NSURL paths from the
+        # NSPasteboard before WKWebView strips them.
+        if sys.platform == "darwin":
+            self._install_macos_native_drop()
+
     def _on_files_dropped(self, *args) -> None:
-        """pywebview event signature varies slightly by version; the file
-        list is always the last positional arg."""
         try:
             files = args[-1] if args else []
-            descriptors: list[dict[str, Any]] = []
-            for f in files:
-                p = getattr(f, "path", None) if not isinstance(f, str) else f
-                if not p:
-                    continue
-                path = Path(p)
-                if path.exists() and self._is_supported(path):
-                    descriptors.append(self._describe(path))
-            if descriptors and self._window is not None:
+            print(f"[compactum] files_dropped fired with {len(files)} item(s)", flush=True)
+            self._deliver_paths_to_js([
+                getattr(f, "path", None) if not isinstance(f, str) else f
+                for f in files
+            ])
+        except Exception as e:
+            print(f"[compactum] _on_files_dropped error: {e}", flush=True)
+
+    def _install_macos_native_drop(self) -> None:
+        try:
+            from webview.platforms.cocoa import BrowserView  # type: ignore
+            import objc  # type: ignore
+            from AppKit import NSURL, NSPasteboardURLReadingFileURLsOnlyKey  # type: ignore
+        except Exception as e:
+            print(f"[compactum] pyobjc fallback unavailable: {e}", flush=True)
+            return
+
+        api_self = self
+        original_imp = None
+        try:
+            original_imp = BrowserView.instanceMethodForSelector_("performDragOperation:")
+        except Exception:
+            pass
+
+        def patched_perform(view_self, sender):
+            try:
+                pboard = sender.draggingPasteboard()
+                opts = {NSPasteboardURLReadingFileURLsOnlyKey: True}
+                urls = pboard.readObjectsForClasses_options_([NSURL.class_()], opts) or []
+                paths = [str(u.path()) for u in urls if u.path()]
+                if paths:
+                    api_self._deliver_paths_to_js(paths)
+                    return True
+            except Exception as e:
+                print(f"[compactum] native drop handler error: {e}", flush=True)
+            if original_imp is not None:
+                try:
+                    return original_imp(view_self, sender)
+                except Exception:
+                    pass
+            return False
+
+        try:
+            objc.classAddMethods(
+                BrowserView,
+                [objc.selector(patched_perform, selector=b"performDragOperation:")],
+            )
+            print("[compactum] pyobjc native drop handler installed", flush=True)
+        except Exception as e:
+            print(f"[compactum] pyobjc install failed: {e}", flush=True)
+
+    def _deliver_paths_to_js(self, paths) -> None:
+        descriptors: list[dict[str, Any]] = []
+        for p in paths:
+            if not p:
+                continue
+            path = Path(str(p))
+            if path.exists() and self._is_supported(path):
+                descriptors.append(self._describe(path))
+        if descriptors and self._window is not None:
+            try:
                 self._window.evaluate_js(
                     f"window.onNativeFileDrop({json.dumps(descriptors)})"
                 )
-        except Exception:
-            pass
+                print(f"[compactum] delivered {len(descriptors)} path(s) to JS", flush=True)
+            except Exception as e:
+                print(f"[compactum] evaluate_js failed: {e}", flush=True)
 
     # --------- file selection ---------
 
