@@ -335,6 +335,42 @@ a:hover { color: var(--accent-hover); }
 }
 .fr-radio-inline input { accent-color: var(--accent); }
 
+/* ============ Segmented mode picker ============ */
+
+.fr-segmented-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.fr-seg-mode {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  text-align: center;
+}
+.fr-seg-mode + .fr-seg-mode { border-left: 1px solid var(--border); }
+.fr-seg-mode input { position: absolute; opacity: 0; pointer-events: none; }
+.fr-seg-mode:hover { background: var(--bf-grey-50); }
+.fr-seg-mode:has(input:checked) {
+  background: var(--accent);
+  color: var(--bf-white);
+}
+.fr-seg-mode.is-disabled { opacity: 0.4; pointer-events: none; }
+.fr-mode-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+
 /* ============ Drop zone (fills the left pane) ============ */
 
 .fr-drop {

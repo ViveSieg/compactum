@@ -21,6 +21,10 @@ const I18N = {
     mode_pdf_hint: "Whole PDF rebuilt ≤ target size.",
     mode_image_title: "Image → Smaller JPG",
     mode_image_hint: "Single image (JPG / PNG / WebP / …) shrunk to target size.",
+    mode_jpg_short: "PDF → JPG",
+    mode_pdf_short: "PDF → PDF",
+    mode_image_short: "IMG → JPG",
+    drop_unsupported: "Drag-drop not available on this system; please use Browse files.",
     drop_title: "📥 Drop a PDF or image here",
     drop_title_pdf: "📥 Drop a PDF here",
     drop_title_image: "📥 Drop an image here",
@@ -75,6 +79,10 @@ const I18N = {
     mode_pdf_hint: "整份 PDF 重建为图片版，整体 ≤ 目标大小",
     mode_image_title: "图片 → 压缩 JPG",
     mode_image_hint: "单张图片（JPG / PNG / WebP …）压到目标大小",
+    mode_jpg_short: "PDF → JPG",
+    mode_pdf_short: "PDF → PDF",
+    mode_image_short: "图片 → JPG",
+    drop_unsupported: "本系统不支持拖动；请用浏览文件按钮。",
     drop_title: "📥 拖入 PDF 或图片",
     drop_title_pdf: "📥 把 PDF 拖到这里",
     drop_title_image: "📥 把图片拖到这里",
@@ -151,6 +159,7 @@ function applyI18n(lang) {
   });
 
   applyDropText();
+  applyModeHint();
   renderFiles();
 }
 
@@ -269,48 +278,43 @@ drop.addEventListener("dragover", (e) => {
 drop.addEventListener("dragleave", (e) => {
   if (e.target === drop) drop.classList.remove("is-dragging");
 });
+// Track whether the native (pywebview) drop handler fired so we don't
+// double-process via the JS fallback.
+let _nativeDropPending = false;
+window.onNativeFileDrop = function (items) {
+  _nativeDropPending = false;
+  if (Array.isArray(items) && items.length) addFiles(items);
+};
+
 drop.addEventListener("drop", async (e) => {
   e.preventDefault();
   drop.classList.remove("is-dragging");
 
-  const files = Array.from(e.dataTransfer.files || []);
-  if (files.length === 0) return;
+  // Mark a native drop as pending. pywebview's files_dropped event fires
+  // shortly after; if it does, _nativeDropPending becomes false again
+  // and we skip the JS path so we don't process twice.
+  _nativeDropPending = true;
+  setTimeout(async () => {
+    if (!_nativeDropPending) return;  // native handler already added them
+    _nativeDropPending = false;
 
-  // Chromium-style: f.path is exposed → use direct path
-  const paths = files.filter((f) => f.path).map((f) => f.path);
-  if (paths.length === files.length) {
-    try {
-      const resolved = await api().resolveDropped(paths);
-      if (resolved && resolved.length) addFiles(resolved);
-    } catch (err) { showError(String(err.message || err)); }
-    return;
-  }
+    const files = Array.from(e.dataTransfer.files || []);
+    if (files.length === 0) return;
 
-  // WKWebView (macOS): no .path. Read bytes, send as base64 to backend.
-  try {
-    const items = await Promise.all(files.map(async (f) => ({
-      name: f.name,
-      b64: await readAsBase64(f),
-    })));
-    const resolved = await api().saveDroppedContent(items);
-    if (resolved && resolved.length) addFiles(resolved);
-  } catch (err) {
-    showError(String(err.message || err));
-  }
+    // Chromium-style fallback: f.path exposed
+    const paths = files.filter((f) => f.path).map((f) => f.path);
+    if (paths.length === files.length) {
+      try {
+        const resolved = await api().resolveDropped(paths);
+        if (resolved && resolved.length) addFiles(resolved);
+      } catch (err) { showError(String(err.message || err)); }
+      return;
+    }
+
+    // No path AND no native event — older pywebview or non-macOS edge case.
+    showError(t("drop_unsupported") || "Drag-drop not available; please use Browse files.");
+  }, 350);
 });
-
-function readAsBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const r = reader.result || "";
-      const comma = r.indexOf(",");
-      resolve(comma >= 0 ? r.slice(comma + 1) : r);
-    };
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
 
 function addFiles(picked) {
   const known = new Set(state.files.map((f) => f.path));
@@ -340,6 +344,16 @@ function setMode(mode) {
   });
   applyDropText();
   applyAdvancedVisibility();
+  applyModeHint();
+}
+
+function applyModeHint() {
+  const el = document.getElementById("modeHint");
+  if (!el) return;
+  const key = state.mode === "image" ? "mode_image_hint"
+            : state.mode === "pdf"   ? "mode_pdf_hint"
+            : "mode_jpg_hint";
+  el.textContent = t(key);
 }
 
 function applyDropText() {
@@ -365,13 +379,14 @@ function applyAdvancedVisibility() {
 }
 
 function applyModeAvailability() {
+  const sel = ".fr-seg-mode[data-mode], .fr-radio[data-mode]";
   if (state.files.length === 0) {
-    document.querySelectorAll('.fr-radio[data-mode]').forEach((el) => el.classList.remove("is-disabled"));
+    document.querySelectorAll(sel).forEach((el) => el.classList.remove("is-disabled"));
     return;
   }
   const allImages = state.files.every((f) => IMAGE_EXT.test(f.name));
   const allPdfs = state.files.every((f) => PDF_EXT.test(f.name));
-  document.querySelectorAll('.fr-radio[data-mode]').forEach((el) => {
+  document.querySelectorAll(sel).forEach((el) => {
     const m = el.dataset.mode;
     const ok = (m === "image" && allImages) || (m !== "image" && allPdfs) || (!allImages && !allPdfs);
     el.classList.toggle("is-disabled", !ok);

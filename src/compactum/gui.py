@@ -42,6 +42,28 @@ class Api:
 
     def attach(self, window: "webview.Window") -> None:
         self._window = window
+        # pywebview 5.x: native drag-drop with real file paths (works on
+        # macOS WKWebView where JS dataTransfer.files[i].path is empty).
+        try:
+            window.events.files_dropped += self._on_files_dropped  # type: ignore[attr-defined]
+        except Exception:
+            pass
+
+    def _on_files_dropped(self, _window, files) -> None:
+        try:
+            paths = []
+            for f in files:
+                p = getattr(f, "path", None) or (f if isinstance(f, str) else None)
+                if not p:
+                    continue
+                path = Path(p)
+                if path.exists() and self._is_supported(path):
+                    paths.append(self._describe(path))
+            if paths and self._window is not None:
+                payload = json.dumps(paths)
+                self._window.evaluate_js(f"window.onNativeFileDrop({payload})")
+        except Exception:
+            pass
 
     # --------- file selection ---------
 
@@ -69,29 +91,6 @@ class Api:
             if not path.exists() or not self._is_supported(path):
                 continue
             out.append(self._describe(path))
-        return out
-
-    def saveDroppedContent(self, items: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Fallback for backends (notably macOS WKWebView) that don't expose
-        a file path on drag-drop. The frontend reads each file as base64 and
-        sends {name, b64}; we write it to ~/Downloads/Compactum/ so the user
-        can see both the input copy and its output afterward."""
-        import base64
-        drop_dir = Path.home() / "Downloads" / "Compactum"
-        drop_dir.mkdir(parents=True, exist_ok=True)
-        out: list[dict[str, Any]] = []
-        for it in items:
-            name = (it.get("name") or "file").replace("/", "_").replace("\\", "_")
-            b64 = it.get("b64") or ""
-            if not b64:
-                continue
-            target = drop_dir / name
-            try:
-                target.write_bytes(base64.b64decode(b64))
-            except Exception:
-                continue
-            if self._is_supported(target):
-                out.append(self._describe(target))
         return out
 
     @staticmethod

@@ -70,32 +70,21 @@
           <span class="fr-pane-num">2</span>
           <span class="fr-pane-title" data-i18n="step1">Output type</span>
         </div>
-        <div class="fr-radio-stack">
-          <label class="fr-radio" data-mode="jpg">
+        <div class="fr-segmented-modes" role="radiogroup">
+          <label class="fr-seg-mode" data-mode="jpg">
             <input type="radio" name="mode" value="jpg" checked />
-            <span class="fr-radio-mark"></span>
-            <span class="fr-radio-body">
-              <span class="fr-radio-title" data-i18n="mode_jpg_title">PDF → Images</span>
-              <span class="fr-radio-hint" data-i18n="mode_jpg_hint">One JPG per page. Each ≤ target size.</span>
-            </span>
+            <span class="fr-seg-label" data-i18n="mode_jpg_short">PDF → JPG</span>
           </label>
-          <label class="fr-radio" data-mode="pdf">
+          <label class="fr-seg-mode" data-mode="pdf">
             <input type="radio" name="mode" value="pdf" />
-            <span class="fr-radio-mark"></span>
-            <span class="fr-radio-body">
-              <span class="fr-radio-title" data-i18n="mode_pdf_title">PDF → Smaller PDF</span>
-              <span class="fr-radio-hint" data-i18n="mode_pdf_hint">Whole PDF rebuilt ≤ target size.</span>
-            </span>
+            <span class="fr-seg-label" data-i18n="mode_pdf_short">PDF → PDF</span>
           </label>
-          <label class="fr-radio" data-mode="image">
+          <label class="fr-seg-mode" data-mode="image">
             <input type="radio" name="mode" value="image" />
-            <span class="fr-radio-mark"></span>
-            <span class="fr-radio-body">
-              <span class="fr-radio-title" data-i18n="mode_image_title">Image → Smaller JPG</span>
-              <span class="fr-radio-hint" data-i18n="mode_image_hint">Single image shrunk to target size.</span>
-            </span>
+            <span class="fr-seg-label" data-i18n="mode_image_short">IMG → JPG</span>
           </label>
         </div>
+        <p class="fr-mode-hint" id="modeHint" data-i18n="mode_jpg_hint">One JPG per page. Each ≤ target size.</p>
       </div>
 
       <div class="fr-control-group" id="sizeGroup">
