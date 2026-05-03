@@ -55,7 +55,7 @@ All releases: <https://github.com/ViveSieg/compactum/releases>
 1. Open Compactum.
 2. Choose an output type.
 3. Drop one or more files into the window (PDF or image).
-4. Choose a target size: 200 KB, 500 KB, 1 MB, 2 MB, 5 MB, or a custom KB value.
+4. Choose a target size: 200 KB, 500 KB, 1 MB, 2 MB, or a custom KB value.
 5. Click **Start**.
 
 The output is written to the same directory as the input, with a suffix added to the file name.
@@ -104,8 +104,9 @@ A single image is compressed to a JPG bounded by the target size. The input form
 - Cross-platform: native binaries for Windows, macOS, and Linux. End users do not need to install Python.
 - Offline. No network access, no telemetry. Files do not leave the machine.
 - Bilingual interface (English / 中文), auto-selected from the system language and switchable in the header.
-- Drag and drop, single or batch.
+- Drag and drop with real OS paths via pywebview's native drop handler — output lands next to the original file on every platform.
 - Batch processing. Multiple files are processed in order; the progress bar shows `[file 2/5] · current page 3/12`.
+- "Open output folder" reveals (highlights) the file in Finder / Explorer / your file manager — it does not auto-open the contents.
 - Skip-limit option. Disable the size cap to convert at native quality without compression (useful for format conversion only).
 - Render-scale control. Adjusts the starting bitmap resolution for PDF inputs (default 2.0×). Image mode does not use this setting.
 - Reporting. After Mode ② finishes, the app reports the effective render scale and the JPEG quality actually used, so a user-supplied scale that had to be reduced is visible rather than hidden.
@@ -200,7 +201,7 @@ No. The license is PolyForm Noncommercial 1.0.0. Contact the author via GitHub f
 1. 打开 Compactum。
 2. 选择输出类型。
 3. 把一个或多个文件拖进窗口（PDF 或图片）。
-4. 选目标大小：200 KB、500 KB、1 MB、2 MB、5 MB，或自定义 KB 数值。
+4. 选目标大小：200 KB、500 KB、1 MB、2 MB，或自定义 KB 数值。
 5. 点击"开始"。
 
 输出文件保存在与输入文件相同的目录下，文件名后会附加后缀。
@@ -249,8 +250,9 @@ No. The license is PolyForm Noncommercial 1.0.0. Contact the author via GitHub f
 - 跨平台：Windows、macOS、Linux 三套原生二进制。终端用户不需要装 Python。
 - 离线运行。零联网、零追踪，文件不离开本机。
 - 中英双语界面，自动跟随系统语言，可在标题栏手动切换。
-- 拖放即用，支持单文件和批量。
+- 拖放即用：通过 pywebview 原生拖放事件拿到真实 OS 路径，输出直接落在原文件旁边。
 - 批量处理：多个文件按顺序处理，进度条显示 `[第 2/5 个] · 当前 3/12 页`。
+- "打开输出位置"会在访达 / 资源管理器 / 文件管理器中**定位高亮**输出文件，不会自动打开文件内容。
 - 关闭压缩选项：关掉大小约束按原画质输出，仅做格式转换时使用。
 - 渲染倍率可调：调节 PDF 输入的起点位图分辨率（默认 2.0×），图片模式不使用该参数。
 - 报告：模式 ② 结束后会显示实际生效的渲染倍率和最终的 JPEG 质量；用户设置过高被自动调低时不会被隐藏。
