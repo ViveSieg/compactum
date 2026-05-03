@@ -16,57 +16,57 @@ const I18N = {
     step2: "📥 Drop your file",
     step3: "📦 Target size",
     mode_jpg_title: "PDF → Images",
-    mode_jpg_hint: "One JPG per page. Each ≤ target size.",
+    mode_jpg_hint: "One JPG per page, each ≤ target.",
     mode_pdf_title: "PDF → Smaller PDF",
-    mode_pdf_hint: "Whole PDF rebuilt ≤ target size.",
+    mode_pdf_hint: "Single rebuilt PDF ≤ target.",
     mode_image_title: "Image → Smaller JPG",
-    mode_image_hint: "Single image (JPG / PNG / WebP / …) shrunk to target size.",
+    mode_image_hint: "JPG / PNG / WebP / … shrunk to target.",
     mode_jpg_short: "PDF → JPG",
     mode_pdf_short: "PDF → PDF",
     mode_image_short: "IMG → JPG",
-    drop_unsupported: "Drag-drop not available on this system; please use Browse files.",
+    drop_unsupported: "Drag-drop couldn't read the file path. Please use Browse files instead.",
     drop_title: "📥 Drop a PDF or image here",
     drop_title_pdf: "📥 Drop a PDF here",
     drop_title_image: "📥 Drop an image here",
     drop_or: "or",
     drop_browse: "Browse files",
-    drop_hint: "PDF · JPG · PNG · WebP · BMP · TIFF · GIF · Stays on your computer",
-    drop_hint_pdf: "Single or multiple PDFs · Stays on your computer",
-    drop_hint_image: "JPG · PNG · WebP · BMP · TIFF · GIF · Stays on your computer",
+    drop_hint: "PDF · JPG · PNG · WebP · BMP · TIFF · GIF · stays local",
+    drop_hint_pdf: "PDF · stays local",
+    drop_hint_image: "JPG · PNG · WebP · BMP · TIFF · GIF · stays local",
     clear_files: "Clear files",
     custom_label: "Or enter a custom size (KB)",
     custom_placeholder: "e.g. 350",
     skip_title: "Skip size limit (native quality)",
-    skip_hint: "Output at original render quality, no size cap. Use when you only need to convert.",
+    skip_hint: "Original quality, no size cap.",
     advanced: "Advanced",
-    scale_label: "Render scale (default 2.0×) — applies to PDF inputs only",
+    scale_label: "Render scale · PDF only · default 2.0×",
     scale_low: "1× soft",
     scale_high: "3× sharp",
-    scale_hint: "Higher = sharper image, larger starting size before compression. The size limit is still hard-enforced regardless of this value.",
+    scale_hint: "Higher = sharper, larger starting size. The size cap is still enforced.",
     reset: "Reset",
     btn_start: "Start",
     btn_running: "Working…",
-    actions_hint: "Output is saved next to the original file.",
+    actions_hint: "Output saved next to the original file.",
     processing: "Processing…",
     done: "✅ Done",
-    done_warning: "Done — but couldn't hit the size cap",
-    cap_exceeded_msg: "The output is already at the minimum feasible size; further compression would destroy the content. Try a larger target size.",
+    done_warning: "Done · target not reached",
+    cap_exceeded_msg: "Output is at the minimum feasible size. Try a larger target.",
     open_folder: "Open output folder",
     another: "Process another",
     error_title: "⚠️ Something went wrong",
     eff_scale: "Render scale",
     eff_quality: "JPEG q",
     pages: "pages",
-    footer_desc: "100% offline · Non-commercial use · Files never leave your machine",
+    footer_desc: "100% offline · non-commercial · files stay local",
     support_author: "Support the author ☕",
     report_bug: "Report a bug",
     donate_title: "Buy me a coffee ☕",
-    donate_intro: "This tool is free for non-commercial use. If it saved you some pain, a small tip is appreciated — but never required.",
+    donate_intro: "Free for non-commercial use. Tips appreciated, never required.",
     alipay: "Alipay",
     wechat: "WeChat Pay",
     wise: "Wise (intl.)",
     thanks: "Thank you!",
-    backend_not_ready: "App is still loading — please try again in a moment.",
+    backend_not_ready: "App is still loading. Try again in a moment.",
   },
   zh: {
     brand_tagline: "完全离线 · 免费 · 仅限非商用",
@@ -74,57 +74,57 @@ const I18N = {
     step2: "📥 拖入文件",
     step3: "📦 目标大小",
     mode_jpg_title: "PDF → 图片",
-    mode_jpg_hint: "每页一张 JPG，每张 ≤ 目标大小",
+    mode_jpg_hint: "每页一张 JPG，单张 ≤ 目标",
     mode_pdf_title: "PDF → 压缩 PDF",
-    mode_pdf_hint: "整份 PDF 重建为图片版，整体 ≤ 目标大小",
+    mode_pdf_hint: "整份 PDF 重建，整体 ≤ 目标",
     mode_image_title: "图片 → 压缩 JPG",
-    mode_image_hint: "单张图片（JPG / PNG / WebP …）压到目标大小",
+    mode_image_hint: "JPG / PNG / WebP / … 压到目标大小",
     mode_jpg_short: "PDF → JPG",
     mode_pdf_short: "PDF → PDF",
     mode_image_short: "图片 → JPG",
-    drop_unsupported: "本系统不支持拖动；请用浏览文件按钮。",
+    drop_unsupported: "拖放拿不到文件路径，请用「浏览文件」。",
     drop_title: "📥 拖入 PDF 或图片",
     drop_title_pdf: "📥 把 PDF 拖到这里",
     drop_title_image: "📥 把图片拖到这里",
     drop_or: "或者",
     drop_browse: "浏览文件",
-    drop_hint: "PDF · JPG · PNG · WebP · BMP · TIFF · GIF · 文件不会离开你的电脑",
-    drop_hint_pdf: "支持单个或多个 PDF · 文件不会离开你的电脑",
-    drop_hint_image: "JPG · PNG · WebP · BMP · TIFF · GIF · 文件不会离开你的电脑",
+    drop_hint: "PDF · JPG · PNG · WebP · BMP · TIFF · GIF · 不会上传",
+    drop_hint_pdf: "PDF · 不会上传",
+    drop_hint_image: "JPG · PNG · WebP · BMP · TIFF · GIF · 不会上传",
     clear_files: "清除文件",
     custom_label: "或输入自定义大小（KB）",
     custom_placeholder: "例如 350",
     skip_title: "不压缩，保留原始画质",
-    skip_hint: "按原渲染画质输出，不限制文件大小。仅当你只需要格式转换时使用。",
+    skip_hint: "原画质输出，不限制大小",
     advanced: "高级选项",
-    scale_label: "渲染倍率（默认 2.0×）— 仅 PDF 输入有效",
+    scale_label: "渲染倍率 · 仅 PDF · 默认 2.0×",
     scale_low: "1× 模糊",
     scale_high: "3× 清晰",
-    scale_hint: "数值越大越清晰、压缩前的起点文件越大；目标 KB 上限仍然会强制硬命中。",
+    scale_hint: "越大越清晰、起点越大；目标 KB 上限仍会硬命中",
     reset: "恢复默认",
     btn_start: "开始",
     btn_running: "处理中…",
-    actions_hint: "输出会自动保存在原文件旁边。",
+    actions_hint: "输出保存在原文件旁边",
     processing: "处理中…",
     done: "✅ 完成",
-    done_warning: "完成 —— 但没能压到目标大小",
-    cap_exceeded_msg: "已经压到最小可行的尺寸了，再小内容就毁了。请改大目标大小。",
+    done_warning: "完成 · 未达到目标大小",
+    cap_exceeded_msg: "已是最小可行尺寸，请改大目标。",
     open_folder: "打开输出位置",
     another: "再处理一个",
     error_title: "⚠️ 出错了",
     eff_scale: "实际倍率",
     eff_quality: "JPEG 质量",
     pages: "页",
-    footer_desc: "100% 离线 · 仅限非商用 · 文件不会上传任何服务器",
+    footer_desc: "100% 离线 · 非商用 · 文件不上传",
     support_author: "支持作者 ☕",
     report_bug: "反馈问题",
     donate_title: "请作者喝杯咖啡 ☕",
-    donate_intro: "本工具非商用免费。如果对你有帮助，欢迎随心打赏 —— 完全自愿。",
+    donate_intro: "非商用免费。打赏完全自愿，不强制。",
     alipay: "支付宝",
     wechat: "微信支付",
     wise: "Wise（境外）",
     thanks: "谢谢！",
-    backend_not_ready: "应用还在启动，稍等一下再试。",
+    backend_not_ready: "应用还在启动，请稍候。",
   },
 };
 
@@ -278,11 +278,10 @@ drop.addEventListener("dragover", (e) => {
 drop.addEventListener("dragleave", (e) => {
   if (e.target === drop) drop.classList.remove("is-dragging");
 });
-// Track whether the native (pywebview) drop handler fired so we don't
-// double-process via the JS fallback.
-let _nativeDropPending = false;
+// Native drop handler (pywebview pushes paths via this when available).
+let _nativeDropAcked = false;
 window.onNativeFileDrop = function (items) {
-  _nativeDropPending = false;
+  _nativeDropAcked = true;
   if (Array.isArray(items) && items.length) addFiles(items);
 };
 
@@ -290,30 +289,29 @@ drop.addEventListener("drop", async (e) => {
   e.preventDefault();
   drop.classList.remove("is-dragging");
 
-  // Mark a native drop as pending. pywebview's files_dropped event fires
-  // shortly after; if it does, _nativeDropPending becomes false again
-  // and we skip the JS path so we don't process twice.
-  _nativeDropPending = true;
-  setTimeout(async () => {
-    if (!_nativeDropPending) return;  // native handler already added them
-    _nativeDropPending = false;
+  const files = Array.from(e.dataTransfer.files || []);
+  if (files.length === 0) return;
 
-    const files = Array.from(e.dataTransfer.files || []);
-    if (files.length === 0) return;
+  // Path 1: f.path is exposed (Chromium-based webviews) — use the real path.
+  const paths = files.filter((f) => f.path).map((f) => f.path);
+  if (paths.length === files.length && paths.length > 0) {
+    try {
+      const resolved = await api().resolveDropped(paths);
+      if (resolved && resolved.length) addFiles(resolved);
+    } catch (err) { showError(String(err.message || err)); }
+    return;
+  }
 
-    // Chromium-style fallback: f.path exposed
-    const paths = files.filter((f) => f.path).map((f) => f.path);
-    if (paths.length === files.length) {
-      try {
-        const resolved = await api().resolveDropped(paths);
-        if (resolved && resolved.length) addFiles(resolved);
-      } catch (err) { showError(String(err.message || err)); }
-      return;
-    }
+  // Path 2: macOS WKWebView strips f.path — wait for pywebview's native
+  // files_dropped event, which delivers real OS paths via onNativeFileDrop.
+  _nativeDropAcked = false;
+  await new Promise((r) => setTimeout(r, 350));
+  if (_nativeDropAcked) return;
 
-    // No path AND no native event — older pywebview or non-macOS edge case.
-    showError(t("drop_unsupported") || "Drag-drop not available; please use Browse files.");
-  }, 350);
+  // Native event didn't fire — be honest about it instead of silently
+  // writing to a guessed folder. Pointing the user at Browse files keeps
+  // the output next to the original file on every platform.
+  showError(t("drop_unsupported"));
 });
 
 function addFiles(picked) {

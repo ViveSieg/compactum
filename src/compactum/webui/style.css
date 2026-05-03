@@ -105,6 +105,14 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+html { height: 100%; }
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.fr-main { flex: 1 0 auto; }
+.fr-footer { flex-shrink: 0; }
 
 button {
   font-family: inherit;
@@ -497,7 +505,7 @@ a:hover { color: var(--accent-hover); }
 
 .fr-presets {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 6px;
 }
 .fr-preset {
