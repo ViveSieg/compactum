@@ -42,26 +42,30 @@ class Api:
 
     def attach(self, window: "webview.Window") -> None:
         self._window = window
-        # pywebview 5.x: native drag-drop with real file paths (works on
-        # macOS WKWebView where JS dataTransfer.files[i].path is empty).
+        # pywebview 5.x exposes a native drag-drop event on all three
+        # platforms (Cocoa / EdgeWebView2 / GTK), giving real OS paths.
         try:
             window.events.files_dropped += self._on_files_dropped  # type: ignore[attr-defined]
         except Exception:
             pass
 
-    def _on_files_dropped(self, _window, files) -> None:
+    def _on_files_dropped(self, *args) -> None:
+        """pywebview event signature varies slightly by version; the file
+        list is always the last positional arg."""
         try:
-            paths = []
+            files = args[-1] if args else []
+            descriptors: list[dict[str, Any]] = []
             for f in files:
-                p = getattr(f, "path", None) or (f if isinstance(f, str) else None)
+                p = getattr(f, "path", None) if not isinstance(f, str) else f
                 if not p:
                     continue
                 path = Path(p)
                 if path.exists() and self._is_supported(path):
-                    paths.append(self._describe(path))
-            if paths and self._window is not None:
-                payload = json.dumps(paths)
-                self._window.evaluate_js(f"window.onNativeFileDrop({payload})")
+                    descriptors.append(self._describe(path))
+            if descriptors and self._window is not None:
+                self._window.evaluate_js(
+                    f"window.onNativeFileDrop({json.dumps(descriptors)})"
+                )
         except Exception:
             pass
 
