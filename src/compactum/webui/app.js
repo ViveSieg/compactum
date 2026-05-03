@@ -607,9 +607,7 @@ const PAY_QR = {
 function setDonateMethod(method) {
   const def = PAY_QR[method] || PAY_QR.wise;
   const img = document.getElementById("donateQR");
-  const label = document.getElementById("donateQRLabel");
   if (img) img.src = def.src;
-  if (label) label.textContent = t(def.labelKey);
   document.querySelectorAll(".fr-donate-tab").forEach((b) => {
     b.classList.toggle("is-active", b.dataset.pay === method);
   });
